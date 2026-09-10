@@ -1,0 +1,4509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#030814">
+<meta name="description" content="NEXUS — seu sistema pessoal">
+<title>NEXUS — Sistema Pessoal</title>
+
+<style>
+:root{
+  --bg:#030814;
+  --panel:#071426e8;
+  --panel2:#0a1b31;
+  --line:#173957;
+  --blue:#20a9ff;
+  --purple:#985cff;
+  --green:#17e6a1;
+  --orange:#ff9a42;
+  --red:#ff5577;
+  --text:#edf7ff;
+  --muted:#8097b2;
+  --shadow:0 15px 50px #0007;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(circle at 70% 0,#12365c55,transparent 30%),
+    radial-gradient(circle at 10% 80%,#512b7025,transparent 30%),
+    var(--bg);
+  color:var(--text);
+}
+
+body{overflow-x:hidden}
+
+button,input,textarea,select{
+  font:inherit;
+}
+
+button{cursor:pointer}
+
+.hidden{display:none!important}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar{
+  position:fixed;
+  z-index:30;
+  left:0;
+  top:0;
+  bottom:0;
+  width:245px;
+  padding:24px 17px;
+  background:#020b17ed;
+  border-right:1px solid #1b3956;
+  backdrop-filter:blur(20px);
+}
+
+.brand{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:0 8px 25px;
+}
+
+.logo{
+  width:43px;
+  height:43px;
+  border:2px solid var(--blue);
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  font-size:24px;
+  font-weight:900;
+  color:var(--blue);
+  box-shadow:0 0 25px #159dff55;
+  transform:skew(-9deg);
+}
+
+.brand h1{
+  margin:0;
+  font-size:21px;
+  letter-spacing:5px;
+}
+
+.brand small{
+  font-size:8px;
+  color:var(--muted);
+  letter-spacing:1.4px;
+}
+
+.nav{
+  display:grid;
+  gap:5px;
+}
+
+.nav button{
+  border:1px solid transparent;
+  background:transparent;
+  color:#aec3d9;
+  text-align:left;
+  padding:11px 12px;
+  border-radius:10px;
+  display:flex;
+  gap:13px;
+  align-items:center;
+}
+
+.nav button:hover,
+.nav button.active{
+  color:#fff;
+  background:linear-gradient(90deg,#147de933,#12335a22);
+  border-color:#218edc44;
+  box-shadow:inset 3px 0 var(--blue);
+}
+
+.ico{
+  width:23px;
+  text-align:center;
+  font-size:18px;
+}
+
+.divider{
+  height:1px;
+  background:#24405a;
+  margin:18px 7px;
+}
+
+.ai{
+  margin:22px 3px;
+  padding:16px;
+  border:1px solid #3d7cd866;
+  border-radius:15px;
+  background:#10284855;
+}
+
+.ai b{font-size:25px}
+
+.ai h3{
+  margin:8px 0 4px;
+  font-size:14px;
+}
+
+.ai p{
+  font-size:10px;
+  line-height:1.5;
+  color:var(--muted);
+}
+
+.ai button,
+.outline{
+  border:1px solid var(--blue);
+  background:transparent;
+  color:#e9f8ff;
+  border-radius:9px;
+  padding:8px 11px;
+  font-size:10px;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+  margin-left:245px;
+  padding:0 30px 80px;
+}
+
+.hero{
+  min-height:205px;
+  position:relative;
+  padding:38px 0 20px;
+  overflow:hidden;
+}
+
+.hero:after{
+  content:"";
+  position:absolute;
+  right:0;
+  top:0;
+  width:50%;
+  height:100%;
+  background:
+    linear-gradient(
+      135deg,
+      transparent,
+      #16355355,
+      #020814aa
+    );
+  clip-path:polygon(
+    55% 0,
+    100% 0,
+    100% 100%,
+    20% 100%
+  );
+}
+
+.hero>*{
+  position:relative;
+  z-index:2;
+}
+
+.greeting{
+  font-size:29px;
+  margin:0 0 5px;
+}
+
+.sun{color:#ffd84c}
+
+.date{
+  color:#a6bdd6;
+  font-size:12px;
+}
+
+.hero p{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.top{
+  position:absolute;
+  right:0;
+  top:25px;
+  display:flex;
+  gap:7px;
+}
+
+.top button{
+  width:38px;
+  height:38px;
+  border:1px solid #28506d;
+  background:#07182bd9;
+  border-radius:10px;
+  color:#c9def3;
+}
+
+.search{
+  max-width:720px;
+  height:50px;
+  border:1px solid var(--blue);
+  border-radius:28px;
+  background:#020c1bdf;
+  display:flex;
+  align-items:center;
+  padding:0 17px;
+  box-shadow:0 0 25px #159dff16;
+}
+
+.search span{font-size:20px}
+
+.search input{
+  flex:1;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff;
+  padding:0 12px;
+  font-size:13px;
+}
+
+.search small{color:#607b98}
+
+/* =========================
+   CARDS
+========================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:11px;
+}
+
+.card{
+  background:
+    linear-gradient(
+      145deg,
+      #0b1f39bb,
+      #051020c7
+    );
+  border:1px solid #1c4b6d;
+  border-radius:15px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(12px);
+}
+
+.stat{
+  padding:15px;
+  min-height:115px;
+}
+
+.stat .si{font-size:23px}
+
+.stat h4{
+  font-size:11px;
+  font-weight:500;
+  margin:10px 0 3px;
+}
+
+.num{
+  font-size:23px;
+  font-weight:750;
+}
+
+.up{
+  font-size:9px;
+  color:var(--green);
+  margin-top:4px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:minmax(0,2.05fr) minmax(260px,.9fr);
+  gap:12px;
+  margin-top:12px;
+}
+
+.two{
+  display:grid;
+  grid-template-columns:1.3fr 1fr;
+  gap:12px;
+  margin-top:12px;
+}
+
+.right{
+  display:grid;
+  gap:12px;
+  align-content:start;
+}
+
+.panel{padding:16px}
+
+.head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #21415b;
+  padding-bottom:10px;
+  margin-bottom:3px;
+}
+
+.head h3{
+  font-size:13px;
+  margin:0;
+}
+
+.head button{
+  background:none;
+  border:0;
+  color:var(--blue);
+  font-size:10px;
+}
+
+/* =========================
+   ITENS
+========================= */
+
+.item{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:11px 2px;
+  border-bottom:1px solid #183149;
+}
+
+.item:last-child{border:0}
+
+.itemmain{
+  flex:1;
+  min-width:0;
+}
+
+.title{font-size:12px}
+
+.sub{
+  font-size:9px;
+  color:var(--muted);
+  margin-top:4px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--blue);
+  box-shadow:0 0 10px currentColor;
+}
+
+.tag{
+  font-size:8px;
+  padding:4px 7px;
+  border-radius:9px;
+  border:1px solid #ffffff20;
+}
+
+.blue{
+  color:#64c5ff;
+  background:#159dff12;
+}
+
+.green{
+  color:#53efbd;
+  background:#17e6a112;
+}
+
+.purple{
+  color:#c19aff;
+  background:#985cff14;
+}
+
+.orange{
+  color:#ffb676;
+  background:#ff9a4212;
+}
+
+.red{
+  color:#ff8098;
+  background:#ff557712;
+}
+
+/* =========================
+   GOAL
+========================= */
+
+.goal{
+  text-align:center;
+  padding:17px;
+}
+
+.goal h3{
+  font-size:13px;
+  margin:0;
+}
+
+.ring{
+  width:82px;
+  height:82px;
+  margin:17px auto;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:
+    conic-gradient(
+      var(--blue) var(--pct,60%),
+      #183451 var(--pct,60%)
+    );
+  position:relative;
+}
+
+.ring:after{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  background:#07162a;
+}
+
+.ring b{
+  z-index:1;
+}
+
+.goal p{
+  font-size:10px;
+  line-height:1.5;
+  color:var(--muted);
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress{
+  height:7px;
+  background:#17304a;
+  border-radius:8px;
+  overflow:hidden;
+  margin-top:7px;
+}
+
+.progress i{
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,var(--blue),var(--purple));
+  border-radius:8px;
+}
+
+/* =========================
+   QUICK
+========================= */
+
+.quick{
+  height:57px;
+  margin-top:12px;
+  border:1px solid var(--blue);
+  border-radius:13px;
+  background:#0b2d4e88;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:0 13px;
+}
+
+.quick small{
+  display:block;
+  color:var(--muted);
+  font-size:9px;
+  margin-top:2px;
+}
+
+.plus{
+  margin-left:auto;
+  width:39px;
+  height:39px;
+  border-radius:50%;
+  border:1px solid #61c5ff;
+  background:#0877e4;
+  color:#fff;
+  font-size:23px;
+  box-shadow:0 0 25px #159dff66;
+}
+
+/* =========================
+   FAB
+========================= */
+
+.fab{
+  position:fixed;
+  z-index:40;
+  right:35px;
+  bottom:88px;
+  display:none;
+  flex-direction:column;
+  gap:7px;
+}
+
+.fab.show{display:flex}
+
+.fab button{
+  border:1px solid #2875a9;
+  background:#071a31;
+  color:#fff;
+  border-radius:10px;
+  padding:9px 12px;
+  font-size:10px;
+  box-shadow:0 10px 30px #0009;
+}
+
+/* =========================
+   BOTTOM
+========================= */
+
+.bottom{display:none}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+  position:fixed;
+  z-index:100;
+  right:20px;
+  top:20px;
+  padding:11px 15px;
+  background:#071a30;
+  border:1px solid var(--blue);
+  border-radius:10px;
+  font-size:11px;
+  opacity:0;
+  transform:translateY(-10px);
+  transition:.2s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:none;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modalback{
+  position:fixed;
+  z-index:80;
+  inset:0;
+  background:#0009;
+  display:none;
+  place-items:center;
+  padding:18px;
+  backdrop-filter:blur(8px);
+}
+
+.modalback.show{display:grid}
+
+.modal{
+  width:min(620px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#061426;
+  border:1px solid #25618c;
+  border-radius:18px;
+  box-shadow:0 25px 80px #000d;
+  padding:20px;
+}
+
+.modalhead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.modalhead h2{
+  font-size:18px;
+  margin:0;
+}
+
+.close{
+  border:0;
+  background:#10253c;
+  color:#fff;
+  width:34px;
+  height:34px;
+  border-radius:9px;
+}
+
+.formgrid{
+  display:grid;
+  gap:11px;
+}
+
+.formgrid.twof{
+  grid-template-columns:1fr 1fr;
+}
+
+.field label{
+  display:block;
+  color:#91a9c2;
+  font-size:10px;
+  margin-bottom:5px;
+}
+
+.field input,
+.field textarea,
+.field select{
+  width:100%;
+  border:1px solid #21445f;
+  background:#031020;
+  color:#fff;
+  border-radius:9px;
+  padding:10px;
+  outline:none;
+}
+
+.field textarea{
+  min-height:130px;
+  resize:vertical;
+}
+
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:15px;
+}
+
+.btn{
+  border:1px solid #2a638a;
+  background:#0b2138;
+  color:#fff;
+  border-radius:9px;
+  padding:9px 14px;
+}
+
+.btn.primary{
+  background:#0877e4;
+  border-color:#43baff;
+}
+
+.danger{color:#ff7890}
+
+/* =========================
+   VIEWS
+========================= */
+
+.view{display:none}
+
+.view.active{display:block}
+
+.view-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:20px 0 12px;
+}
+
+.view-title h2{
+  margin:0;
+  font-size:22px;
+}
+
+.view-title button{
+  background:#0877e4;
+  border:1px solid #55c0ff;
+  color:#fff;
+  border-radius:10px;
+  padding:9px 13px;
+  font-size:11px;
+}
+
+.listgrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+}
+
+.record{
+  padding:15px;
+}
+
+.record h3{
+  margin:0;
+  font-size:13px;
+}
+
+.record p{
+  font-size:10px;
+  color:var(--muted);
+  line-height:1.5;
+  white-space:pre-wrap;
+}
+
+.recordmeta{
+  font-size:9px;
+  color:#63809d;
+  margin-top:8px;
+}
+
+.recordactions{
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+.recordactions button{
+  border:1px solid #244a67;
+  background:#091b2e;
+  color:#cde2f5;
+  border-radius:7px;
+  padding:6px 8px;
+  font-size:9px;
+}
+
+.recordactions .del{
+  color:#ff7189;
+}
+
+.empty{
+  padding:35px;
+  text-align:center;
+  color:var(--muted);
+  border:1px dashed #22435e;
+  border-radius:13px;
+}
+
+.check{
+  border:1px solid #28506d;
+  background:#071a2d;
+  color:#fff;
+  border-radius:7px;
+  width:28px;
+  height:28px;
+}
+
+/* =========================
+   STATUS FIREBASE
+========================= */
+
+.firebase-status{
+  position:fixed;
+  left:260px;
+  bottom:16px;
+  z-index:50;
+  font-size:9px;
+  color:#63eec1;
+  background:#031b17dd;
+  border:1px solid #17e6a155;
+  padding:6px 9px;
+  border-radius:8px;
+}
+
+.firebase-status.error{
+  color:#ff8298;
+  background:#2a0710dd;
+  border-color:#ff557755;
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media(max-width:900px){
+
+  .sidebar{display:none}
+
+  .main{
+    margin:0;
+    padding:0 14px 85px;
+  }
+
+  .hero{
+    min-height:195px;
+    padding-top:25px;
+  }
+
+  .greeting{
+    font-size:24px;
+    margin-top:38px;
+  }
+
+  .top{top:18px}
+
+  .top button{
+    width:34px;
+    height:34px;
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .stats .stat:last-child{
+    grid-column:span 2;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .two{
+    grid-template-columns:1fr;
+  }
+
+  .right{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .bottom{
+    position:fixed;
+    display:flex;
+    z-index:30;
+    left:0;
+    right:0;
+    bottom:0;
+    height:68px;
+    background:#020b17ed;
+    border-top:1px solid #1d3b55;
+    justify-content:space-around;
+    align-items:center;
+    backdrop-filter:blur(18px);
+  }
+
+  .bottom button{
+    border:0;
+    background:none;
+    color:#7891ab;
+    font-size:9px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    align-items:center;
+  }
+
+  .bottom .active{
+    color:#4cbcff;
+  }
+
+  .bottom .center{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    margin-top:-25px;
+    background:#0877e4;
+    border:2px solid #4fc0ff;
+    color:#fff;
+    font-size:22px;
+    box-shadow:0 0 25px #159dff66;
+  }
+
+  .fab{
+    right:17px;
+    bottom:79px;
+  }
+
+  .listgrid{
+    grid-template-columns:1fr;
+  }
+
+  .firebase-status{
+    left:10px;
+    bottom:75px;
+  }
+}
+
+@media(max-width:520px){
+
+  .right{
+    grid-template-columns:1fr;
+  }
+
+  .formgrid.twof{
+    grid-template-columns:1fr;
+  }
+
+  .stats{
+    gap:8px;
+  }
+
+  .stat{
+    padding:12px;
+  }
+
+  .num{
+    font-size:20px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside class="sidebar">
+
+  <div class="brand">
+
+    <div class="logo">N</div>
+
+    <div>
+      <h1>NEXUS</h1>
+      <small>SEU MUNDO. ORGANIZADO.</small>
+    </div>
+
+  </div>
+
+
+  <nav class="nav">
+
+    <button class="active" data-view="home">
+      <span class="ico">⌂</span>
+      Início
+    </button>
+
+    <button data-view="ideas">
+      <span class="ico">♧</span>
+      Ideias
+    </button>
+
+    <button data-view="notes">
+      <span class="ico">▣</span>
+      Notas
+    </button>
+
+    <button data-view="projects">
+      <span class="ico">▱</span>
+      Projetos
+    </button>
+
+    <button data-view="goals">
+      <span class="ico">◎</span>
+      Objetivos
+    </button>
+
+    <button data-view="tasks">
+      <span class="ico">☑</span>
+      Tarefas
+    </button>
+
+    <button data-view="archive">
+      <span class="ico">▤</span>
+      Arquivo
+    </button>
+
+  </nav>
+
+  <div class="divider"></div>
+
+  <nav class="nav">
+
+    <button data-view="searchView">
+      <span class="ico">⌕</span>
+      Busca
+    </button>
+
+    <button data-view="favorites">
+      <span class="ico">☆</span>
+      Favoritos
+    </button>
+
+    <button data-view="trash">
+      <span class="ico">♜</span>
+      Lixeira
+    </button>
+
+    <button data-view="history">
+      <span class="ico">◷</span>
+      Histórico
+    </button>
+
+  </nav>
+
+  <div class="ai">
+
+    <b>◈</b>
+
+    <h3>IA NEXUS</h3>
+
+    <p>
+      Seu assistente pessoal para organizar,
+      planejar e encontrar o que precisa.
+    </p>
+
+    <button onclick="toast('A IA será conectada em uma próxima etapa.')">
+      Conversar →
+    </button>
+
+  </div>
+
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+  <section class="hero">
+
+    <div class="top">
+
+      <button onclick="firebaseInfo()">
+        ☁
+      </button>
+
+      <button onclick="toast('Nenhuma notificação nova.')">
+        ♧
+      </button>
+
+      <button onclick="toggleTheme()">
+        ☾
+      </button>
+
+    </div>
+
+    <h1 class="greeting">
+      <span class="sun">☀</span>
+      Bom dia, Victor!
+    </h1>
+
+    <div class="date" id="date"></div>
+
+    <p>
+      Que tal transformar suas ideias em grandes planos?
+    </p>
+
+    <label class="search">
+
+      <span>⌕</span>
+
+      <input
+        id="globalSearch"
+        placeholder="Pesquisar em tudo..."
+        autocomplete="off"
+      >
+
+      <small>
+        Ctrl + K
+      </small>
+
+    </label>
+
+  </section>
+
+
+  <!-- =========================
+       HOME
+  ========================= -->
+
+  <section id="home" class="view active">
+
+    <div class="stats">
+
+      <div class="card stat">
+        <div class="si">♧</div>
+        <h4>Ideias</h4>
+        <div class="num" id="countIdeas">0</div>
+        <div class="up">↑ registradas</div>
+      </div>
+
+      <div class="card stat">
+        <div class="si">▱</div>
+        <h4>Projetos</h4>
+        <div class="num" id="countProjects">0</div>
+        <div class="up">↑ cadastrados</div>
+      </div>
+
+      <div class="card stat">
+        <div class="si">▣</div>
+        <h4>Notas</h4>
+        <div class="num" id="countNotes">0</div>
+        <div class="up">↑ registradas</div>
+      </div>
+
+      <div class="card stat">
+        <div class="si">◎</div>
+        <h4>Objetivos</h4>
+        <div class="num" id="countGoals">0</div>
+        <div class="up">↑ cadastrados</div>
+      </div>
+
+      <div class="card stat">
+        <div class="si">☑</div>
+        <h4>Tarefas abertas</h4>
+        <div class="num" id="countTasks">0</div>
+        <div class="up">↑ pendentes</div>
+      </div>
+
+    </div>
+
+
+    <div class="grid">
+
+      <div>
+
+        <div class="card panel">
+
+          <div class="head">
+
+            <h3>
+              ♧ &nbsp; Últimas Ideias
+            </h3>
+
+            <button onclick="openView('ideas')">
+              Ver todas →
+            </button>
+
+          </div>
+
+          <div id="homeIdeas"></div>
+
+        </div>
+
+
+        <div class="two">
+
+          <div class="card panel">
+
+            <div class="head">
+
+              <h3>
+                ▱ &nbsp; Projetos em Andamento
+              </h3>
+
+              <button onclick="openView('projects')">
+                Ver todos →
+              </button>
+
+            </div>
+
+            <div id="homeProjects"></div>
+
+          </div>
+
+
+          <div class="card panel">
+
+            <div class="head">
+
+              <h3>
+                ▣ &nbsp; Notas Recentes
+              </h3>
+
+              <button onclick="openView('notes')">
+                Ver todas →
+              </button>
+
+            </div>
+
+            <div id="homeNotes"></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="right">
+
+        <div class="card goal">
+
+          <h3>
+            ◎ &nbsp; Objetivo em destaque
+          </h3>
+
+          <div class="ring" id="goalRing">
+
+            <b id="goalPct">
+              0%
+            </b>
+
+          </div>
+
+          <strong id="goalName">
+            Nenhum objetivo
+          </strong>
+
+          <p id="goalDesc">
+            Crie seu primeiro objetivo.
+          </p>
+
+          <button
+            class="outline"
+            onclick="openView('goals')"
+          >
+            Ver objetivos →
+          </button>
+
+        </div>
+
+
+        <div class="card panel">
+
+          <div class="head">
+
+            <h3>
+              ☑ &nbsp; Tarefas
+            </h3>
+
+            <button onclick="openView('tasks')">
+              Ver todas →
+            </button>
+
+          </div>
+
+          <div id="homeTasks"></div>
+
+        </div>
+
+
+        <div class="card panel">
+
+          <div class="head">
+
+            <h3>
+              ▥ &nbsp; Resumo
+            </h3>
+
+          </div>
+
+          <div id="summary"></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="quick">
+
+      <span style="font-size:22px">
+        ϟ
+      </span>
+
+      <div>
+
+        <b>
+          Captura Rápida
+        </b>
+
+        <small>
+          Registre algo agora mesmo...
+        </small>
+
+      </div>
+
+      <button
+        class="plus"
+        onclick="toggleFab()"
+      >
+        +
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- OUTRAS TELAS -->
+
+  <section id="ideas" class="view"></section>
+  <section id="notes" class="view"></section>
+  <section id="projects" class="view"></section>
+  <section id="goals" class="view"></section>
+  <section id="tasks" class="view"></section>
+  <section id="archive" class="view"></section>
+  <section id="favorites" class="view"></section>
+  <section id="trash" class="view"></section>
+  <section id="history" class="view"></section>
+  <section id="searchView" class="view"></section>
+
+</main>
+
+
+<!-- =========================
+     FAB
+========================= -->
+
+<div class="fab" id="fab">
+
+  <button onclick="openModal('idea')">
+    💡 Nova ideia
+  </button>
+
+  <button onclick="openModal('note')">
+    📝 Nova nota
+  </button>
+
+  <button onclick="openModal('project')">
+    📁 Novo projeto
+  </button>
+
+  <button onclick="openModal('goal')">
+    🎯 Novo objetivo
+  </button>
+
+  <button onclick="openModal('task')">
+    ☑ Nova tarefa
+  </button>
+
+</div>
+
+
+<!-- =========================
+     MOBILE
+========================= -->
+
+<nav class="bottom">
+
+  <button
+    class="active"
+    onclick="openView('home')"
+  >
+    <span>⌂</span>
+    Início
+  </button>
+
+  <button onclick="openView('ideas')">
+    <span>♧</span>
+    Ideias
+  </button>
+
+  <button
+    class="center"
+    onclick="toggleFab()"
+  >
+    +
+  </button>
+
+  <button onclick="openView('projects')">
+    <span>▱</span>
+    Projetos
+  </button>
+
+  <button onclick="openView('tasks')">
+    <span>☑</span>
+    Tarefas
+  </button>
+
+  <button onclick="openView('notes')">
+    <span>▣</span>
+    Notas
+  </button>
+
+</nav>
+
+
+<!-- =========================
+     MODAL
+========================= -->
+
+<div
+  class="modalback"
+  id="modalBack"
+  onclick="if(event.target===this)closeModal()"
+>
+
+  <div class="modal">
+
+    <div class="modalhead">
+
+      <h2 id="modalTitle">
+        Novo registro
+      </h2>
+
+      <button
+        class="close"
+        onclick="closeModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <form id="recordForm">
+
+      <div id="formFields"></div>
+
+      <div class="actions">
+
+        <button
+          type="button"
+          class="btn"
+          onclick="closeModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          class="btn primary"
+          type="submit"
+        >
+          Salvar
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<div class="toast" id="toastBox"></div>
+
+<div
+  id="firebaseStatus"
+  class="firebase-status"
+>
+  ☁ Conectando ao Firestore...
+</div>
+
+
+<!-- ======================================================
+     FIREBASE + NEXUS
+====================================================== -->
+
+<script type="module">
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+
+import {
+  getFirestore,
+  doc,
+  onSnapshot,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+
+/* ======================================================
+   FIREBASE
+====================================================== */
+
+const firebaseConfig = {
+
+  apiKey:
+    "AIzaSyDNWdoPW7psmQPD5mvGBOM7M6M-wiuzrQ",
+
+  authDomain:
+    "nexus-6222e.firebaseapp.com",
+
+  projectId:
+    "nexus-6222e",
+
+  storageBucket:
+    "nexus-6222e.firebasestorage.app",
+
+  messagingSenderId:
+    "433993394221",
+
+  appId:
+    "1:433993394221:web:ab6b5732be8e1e131d70a4"
+
+};
+
+
+const app =
+  initializeApp(
+    firebaseConfig
+  );
+
+
+const db =
+  getFirestore(app);
+
+
+/*
+  SEM LOGIN:
+
+  Usaremos um documento fixo:
+
+  coleção: nexus
+  documento: public
+
+  Isso permite que o mesmo NEXUS
+  seja acessado de qualquer aparelho
+  usando o mesmo banco.
+*/
+
+const nexusRef =
+  doc(
+    db,
+    "nexus",
+    "public"
+  );
+
+
+/* ======================================================
+   BANCO LOCAL EM MEMÓRIA
+====================================================== */
+
+let nexus = {
+
+  ideas:[],
+  notes:[],
+  projects:[],
+  goals:[],
+  tasks:[],
+  archive:[],
+  trash:[],
+  history:[]
+
+};
+
+
+let editing = null;
+let currentView = "home";
+let unsubscribe = null;
+let saving = false;
+
+
+/* ======================================================
+   HELPERS
+====================================================== */
+
+function uid(){
+
+  return Date.now().toString(36)
+    +
+    Math.random()
+      .toString(36)
+      .substring(2,8);
+
+}
+
+
+function now(){
+
+  return new Date().toLocaleString(
+    "pt-BR",
+    {
+      dateStyle:"short",
+      timeStyle:"short"
+    }
+  );
+
+}
+
+
+function today(){
+
+  return new Date()
+    .toISOString()
+    .slice(0,10);
+
+}
+
+
+function esc(value=""){
+
+  return String(value)
+    .replace(
+      /[&<>"']/g,
+      char =>
+      ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+      }[char])
+    );
+
+}
+
+
+function typeName(type){
+
+  return {
+
+    idea:"Ideia",
+    note:"Nota",
+    project:"Projeto",
+    goal:"Objetivo",
+    task:"Tarefa"
+
+  }[type] || type;
+
+}
+
+
+/* ======================================================
+   TOAST
+====================================================== */
+
+window.toast = function(message){
+
+  const box =
+    document.getElementById(
+      "toastBox"
+    );
+
+  box.textContent =
+    message;
+
+  box.classList.add(
+    "show"
+  );
+
+  clearTimeout(
+    window.__toast
+  );
+
+  window.__toast =
+    setTimeout(
+      ()=>{
+        box.classList.remove(
+          "show"
+        );
+      },
+      2200
+    );
+
+};
+
+
+/* ======================================================
+   FIREBASE STATUS
+====================================================== */
+
+function firebaseStatus(
+  message,
+  error=false
+){
+
+  const el =
+    document.getElementById(
+      "firebaseStatus"
+    );
+
+  el.textContent =
+    message;
+
+  el.classList.toggle(
+    "error",
+    error
+  );
+
+}
+
+
+/* ======================================================
+   CONVERTER DADOS DO FIRESTORE
+====================================================== */
+
+function cleanData(data){
+
+  return {
+
+    ideas:
+      Array.isArray(data?.ideas)
+      ? data.ideas
+      : [],
+
+    notes:
+      Array.isArray(data?.notes)
+      ? data.notes
+      : [],
+
+    projects:
+      Array.isArray(data?.projects)
+      ? data.projects
+      : [],
+
+    goals:
+      Array.isArray(data?.goals)
+      ? data.goals
+      : [],
+
+    tasks:
+      Array.isArray(data?.tasks)
+      ? data.tasks
+      : [],
+
+    archive:
+      Array.isArray(data?.archive)
+      ? data.archive
+      : [],
+
+    trash:
+      Array.isArray(data?.trash)
+      ? data.trash
+      : [],
+
+    history:
+      Array.isArray(data?.history)
+      ? data.history
+      : []
+
+  };
+
+}
+
+
+/* ======================================================
+   ESCUTAR FIRESTORE EM TEMPO REAL
+====================================================== */
+
+unsubscribe =
+  onSnapshot(
+
+    nexusRef,
+
+    snapshot => {
+
+      if(snapshot.exists()){
+
+        nexus =
+          cleanData(
+            snapshot.data()
+          );
+
+      }else{
+
+        nexus = {
+
+          ideas:[],
+          notes:[],
+          projects:[],
+          goals:[],
+          tasks:[],
+          archive:[],
+          trash:[],
+          history:[]
+
+        };
+
+        /*
+          Cria o documento inicial.
+        */
+
+        setDoc(
+          nexusRef,
+          nexus
+        )
+        .catch(
+          error => {
+
+            console.error(
+              error
+            );
+
+            firebaseStatus(
+              "⚠ Erro ao criar banco",
+              true
+            );
+
+          }
+        );
+
+      }
+
+      firebaseStatus(
+        "☁ Firestore conectado"
+      );
+
+      renderAll();
+
+    },
+
+    error => {
+
+      console.error(
+        "Firestore:",
+        error
+      );
+
+      firebaseStatus(
+        "⚠ Erro no Firestore",
+        true
+      );
+
+      toast(
+        "Não foi possível acessar o banco."
+      );
+
+    }
+
+  );
+
+
+/* ======================================================
+   SALVAR NO FIRESTORE
+====================================================== */
+
+async function saveDatabase(){
+
+  if(saving)return;
+
+  saving=true;
+
+  firebaseStatus(
+    "☁ Salvando..."
+  );
+
+  try{
+
+    await setDoc(
+      nexusRef,
+      {
+        ideas:nexus.ideas,
+        notes:nexus.notes,
+        projects:nexus.projects,
+        goals:nexus.goals,
+        tasks:nexus.tasks,
+        archive:nexus.archive,
+        trash:nexus.trash,
+        history:nexus.history,
+        updatedAt:serverTimestamp()
+      }
+    );
+
+    firebaseStatus(
+      "☁ Sincronizado"
+    );
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+    firebaseStatus(
+      "⚠ Erro ao salvar",
+      true
+    );
+
+    toast(
+      "Erro ao salvar no banco."
+    );
+
+  }finally{
+
+    saving=false;
+
+  }
+
+}
+
+
+/* ======================================================
+   DATA
+====================================================== */
+
+document.getElementById(
+  "date"
+).textContent =
+new Intl.DateTimeFormat(
+  "pt-BR",
+  {
+    weekday:"long",
+    day:"numeric",
+    month:"long",
+    year:"numeric"
+  }
+)
+.format(new Date())
+.replace(
+  /^./,
+  m=>m.toUpperCase()
+);
+
+
+/* ======================================================
+   NAVEGAÇÃO
+====================================================== */
+
+window.openView =
+function(view){
+
+  currentView =
+    view;
+
+  document
+    .querySelectorAll(
+      ".view"
+    )
+    .forEach(
+      v =>
+      v.classList.remove(
+        "active"
+      )
+    );
+
+  const target =
+    document.getElementById(
+      view
+    );
+
+  if(target){
+
+    target.classList.add(
+      "active"
+    );
+
+  }
+
+  document
+    .querySelectorAll(
+      ".nav button"
+    )
+    .forEach(
+      b =>
+      b.classList.toggle(
+        "active",
+        b.dataset.view === view
+      )
+    );
+
+  renderView(
+    view
+  );
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+};
+
+
+document
+  .querySelectorAll(
+    ".nav button"
+  )
+  .forEach(
+    button => {
+
+      button.onclick =
+        () =>
+        openView(
+          button.dataset.view
+        );
+
+    }
+  );
+
+
+/* ======================================================
+   FAB
+====================================================== */
+
+window.toggleFab =
+function(){
+
+  document
+    .getElementById(
+      "fab"
+    )
+    .classList.toggle(
+      "show"
+    );
+
+};
+
+
+function closeFab(){
+
+  document
+    .getElementById(
+      "fab"
+    )
+    .classList.remove(
+      "show"
+    );
+
+}
+
+
+/* ======================================================
+   FIND ITEM
+====================================================== */
+
+window.findItem =
+function(type,id){
+
+  return (
+    nexus[
+      type+"s"
+    ] || []
+  ).find(
+    item =>
+    item.id === id
+  );
+
+};
+
+
+/* ======================================================
+   MODAL
+====================================================== */
+
+window.openModal =
+function(type,item=null){
+
+  closeFab();
+
+  editing =
+    item
+    ?
+    {
+      type,
+      id:item.id
+    }
+    :
+    null;
+
+  document.getElementById(
+    "modalTitle"
+  ).textContent =
+    (item
+      ?"Editar "
+      :"Novo ")
+    +
+    typeName(type);
+
+
+  const common =
+  (
+    label,
+    name,
+    value="",
+    required=true
+  ) => `
+
+    <div class="field">
+
+      <label>
+        ${label}
+      </label>
+
+      <input
+        name="${name}"
+        value="${esc(value)}"
+        ${required?"required":""}
+      >
+
+    </div>
+
+  `;
+
+
+  let fields = "";
+
+
+  /* IDEA */
+
+  if(type === "idea"){
+
+    fields = `
+
+      <div class="formgrid">
+
+        ${common(
+          "Título",
+          "title",
+          item?.title || ""
+        )}
+
+        <div class="field">
+
+          <label>
+            Categoria
+          </label>
+
+          <select name="category">
+
+            <option
+              ${item?.category==="Negócios"
+                ?"selected":""
+              }
+            >
+              Negócios
+            </option>
+
+            <option
+              ${item?.category==="Pessoal"
+                ?"selected":""
+              }
+            >
+              Pessoal
+            </option>
+
+            <option
+              ${item?.category==="Tecnologia"
+                ?"selected":""
+              }
+            >
+              Tecnologia
+            </option>
+
+            <option
+              ${item?.category==="Finanças"
+                ?"selected":""
+              }
+            >
+              Finanças
+            </option>
+
+            <option
+              ${item?.category==="Estudos"
+                ?"selected":""
+              }
+            >
+              Estudos
+            </option>
+
+            <option
+              ${item?.category==="Outros"
+                ?"selected":""
+              }
+            >
+              Outros
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Descrição
+          </label>
+
+          <textarea
+            name="body"
+            placeholder="Escreva sua ideia..."
+          >${esc(item?.body || "")}</textarea>
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Favorita?
+          </label>
+
+          <select name="favorite">
+
+            <option value="false">
+              Não
+            </option>
+
+            <option
+              value="true"
+              ${item?.favorite
+                ?"selected":""
+              }
+            >
+              Sim
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* NOTE */
+
+  if(type === "note"){
+
+    fields = `
+
+      <div class="formgrid">
+
+        ${common(
+          "Título",
+          "title",
+          item?.title || ""
+        )}
+
+        ${common(
+          "Categoria",
+          "category",
+          item?.category || "Pessoal",
+          false
+        )}
+
+        <div class="field">
+
+          <label>
+            Conteúdo
+          </label>
+
+          <textarea
+            name="body"
+            placeholder="Escreva sua anotação..."
+          >${esc(item?.body || "")}</textarea>
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Favorita?
+          </label>
+
+          <select name="favorite">
+
+            <option value="false">
+              Não
+            </option>
+
+            <option
+              value="true"
+              ${item?.favorite
+                ?"selected":""
+              }
+            >
+              Sim
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* PROJECT */
+
+  if(type === "project"){
+
+    fields = `
+
+      <div class="formgrid">
+
+        ${common(
+          "Nome do projeto",
+          "title",
+          item?.title || ""
+        )}
+
+        <div class="formgrid twof">
+
+          ${common(
+            "Progresso (%)",
+            "progress",
+            item?.progress ?? 0
+          )}
+
+          ${common(
+            "Categoria",
+            "category",
+            item?.category || "Negócios"
+          )}
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Descrição
+          </label>
+
+          <textarea
+            name="body"
+          >${esc(item?.body || "")}</textarea>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* GOAL */
+
+  if(type === "goal"){
+
+    fields = `
+
+      <div class="formgrid">
+
+        ${common(
+          "Objetivo",
+          "title",
+          item?.title || ""
+        )}
+
+        <div class="formgrid twof">
+
+          ${common(
+            "Progresso (%)",
+            "progress",
+            item?.progress ?? 0
+          )}
+
+          ${common(
+            "Prazo",
+            "due",
+            item?.due || "",
+            false
+          )}
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Descrição
+          </label>
+
+          <textarea
+            name="body"
+          >${esc(item?.body || "")}</textarea>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* TASK */
+
+  if(type === "task"){
+
+    fields = `
+
+      <div class="formgrid">
+
+        ${common(
+          "Tarefa",
+          "title",
+          item?.title || ""
+        )}
+
+        <div class="formgrid twof">
+
+          ${common(
+            "Data",
+            "date",
+            item?.date || today()
+          )}
+
+          ${common(
+            "Horário",
+            "time",
+            item?.time || "",
+            false
+          )}
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Prioridade
+          </label>
+
+          <select name="priority">
+
+            <option
+              ${item?.priority==="Normal"
+                ?"selected":""
+              }
+            >
+              Normal
+            </option>
+
+            <option
+              ${item?.priority==="Alta"
+                ?"selected":""
+              }
+            >
+              Alta
+            </option>
+
+            <option
+              ${item?.priority==="Baixa"
+                ?"selected":""
+              }
+            >
+              Baixa
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Detalhes
+          </label>
+
+          <textarea
+            name="body"
+          >${esc(item?.body || "")}</textarea>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  document.getElementById(
+    "formFields"
+  ).innerHTML =
+    fields;
+
+
+  document.getElementById(
+    "modalBack"
+  ).classList.add(
+    "show"
+  );
+
+};
+
+
+window.closeModal =
+function(){
+
+  document
+    .getElementById(
+      "modalBack"
+    )
+    .classList.remove(
+      "show"
+    );
+
+  editing=null;
+
+};
+
+
+/* ======================================================
+   FORM
+====================================================== */
+
+document.getElementById(
+  "recordForm"
+).addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
+
+    const form =
+      new FormData(
+        event.target
+      );
+
+    const data =
+      Object.fromEntries(
+        form.entries()
+      );
+
+    const type =
+      editing?.type
+      ||
+      document
+        .getElementById(
+          "modalTitle"
+        )
+        .textContent
+        .replace(
+          /^Novo |^Editar /,
+          ""
+        )
+        .toLowerCase()
+        .replace(
+          "ideia",
+          "idea"
+        )
+        .replace(
+          "nota",
+          "note"
+        )
+        .replace(
+          "projeto",
+          "project"
+        )
+        .replace(
+          "objetivo",
+          "goal"
+        )
+        .replace(
+          "tarefa",
+          "task"
+        );
+
+
+    const arr =
+      nexus[
+        type+"s"
+      ];
+
+
+    const old =
+      editing
+      ?
+      arr.find(
+        x =>
+        x.id === editing.id
+      )
+      :
+      null;
+
+
+    const item = {
+
+      ...data,
+
+      id:
+        editing?.id
+        ||
+        uid(),
+
+      created:
+        old?.created
+        ||
+        now()
+
+    };
+
+
+    if(
+      type === "idea"
+      ||
+      type === "note"
+    ){
+
+      item.favorite =
+        data.favorite === "true";
+
+    }
+
+
+    if(
+      type === "project"
+      ||
+      type === "goal"
+    ){
+
+      item.progress =
+        Math.max(
+          0,
+          Math.min(
+            100,
+            Number(
+              data.progress
+            ) || 0
+          )
+        );
+
+    }
+
+
+    if(type === "task"){
+
+      item.done =
+        old?.done
+        ||
+        false;
+
+    }
+
+
+    const index =
+      arr.findIndex(
+        x =>
+        x.id === item.id
+      );
+
+
+    if(index >= 0){
+
+      arr[index] =
+        item;
+
+    }else{
+
+      arr.unshift(
+        item
+      );
+
+    }
+
+
+    nexus.history.unshift({
+
+      id:uid(),
+
+      action:
+        editing
+        ?
+        "Editado"
+        :
+        "Criado",
+
+      type,
+
+      name:item.title,
+
+      date:now()
+
+    });
+
+
+    nexus.history =
+      nexus.history.slice(
+        0,
+        100
+      );
+
+
+    closeModal();
+
+    renderAll();
+
+    await saveDatabase();
+
+    toast(
+      typeName(type)
+      +
+      " salvo com sucesso."
+    );
+
+  }
+);
+
+
+/* ======================================================
+   DELETE
+====================================================== */
+
+window.deleteItem =
+async function(type,id){
+
+  const arr =
+    nexus[
+      type+"s"
+    ];
+
+  const index =
+    arr.findIndex(
+      x =>
+      x.id === id
+    );
+
+  if(index < 0)return;
+
+
+  const item =
+    arr.splice(
+      index,
+      1
+    )[0];
+
+
+  item.deletedAt =
+    now();
+
+
+  nexus.trash.unshift({
+
+    type,
+
+    item
+
+  });
+
+
+  nexus.history.unshift({
+
+    id:uid(),
+
+    action:"Excluído",
+
+    type,
+
+    name:item.title,
+
+    date:now()
+
+  });
+
+
+  nexus.history =
+    nexus.history.slice(
+      0,
+      100
+    );
+
+
+  renderAll();
+
+  await saveDatabase();
+
+  toast(
+    "Enviado para a lixeira."
+  );
+
+};
+
+
+/* ======================================================
+   RESTORE
+====================================================== */
+
+window.restoreItem =
+async function(id){
+
+  const index =
+    nexus.trash.findIndex(
+      x =>
+      x.item.id === id
+    );
+
+  if(index < 0)return;
+
+
+  const record =
+    nexus.trash.splice(
+      index,
+      1
+    )[0];
+
+
+  delete record.item.deletedAt;
+
+
+  nexus[
+    record.type+"s"
+  ].unshift(
+    record.item
+  );
+
+
+  nexus.history.unshift({
+
+    id:uid(),
+
+    action:"Restaurado",
+
+    type:record.type,
+
+    name:record.item.title,
+
+    date:now()
+
+  });
+
+
+  renderAll();
+
+  await saveDatabase();
+
+  toast(
+    "Registro restaurado."
+  );
+
+};
+
+
+/* ======================================================
+   EMPTY TRASH
+====================================================== */
+
+window.emptyTrash =
+async function(){
+
+  if(
+    !confirm(
+      "Esvaziar a lixeira permanentemente?"
+    )
+  )
+    return;
+
+
+  nexus.trash=[];
+
+  nexus.history.unshift({
+
+    id:uid(),
+
+    action:"Lixeira esvaziada",
+
+    type:"system",
+
+    name:"Lixeira",
+
+    date:now()
+
+  });
+
+
+  renderAll();
+
+  await saveDatabase();
+
+  toast(
+    "Lixeira esvaziada."
+  );
+
+};
+
+
+/* ======================================================
+   FAVORITO
+====================================================== */
+
+window.favorite =
+async function(type,id){
+
+  const item =
+    findItem(
+      type,
+      id
+    );
+
+  if(!item)return;
+
+
+  item.favorite =
+    !item.favorite;
+
+
+  renderAll();
+
+  await saveDatabase();
+
+  toast(
+    item.favorite
+    ?
+    "Adicionado aos favoritos."
+    :
+    "Removido dos favoritos."
+  );
+
+};
+
+
+/* ======================================================
+   TASK
+====================================================== */
+
+window.toggleTask =
+async function(id){
+
+  const item =
+    findItem(
+      "task",
+      id
+    );
+
+  if(!item)return;
+
+
+  item.done =
+    !item.done;
+
+
+  renderAll();
+
+  await saveDatabase();
+
+  toast(
+    item.done
+    ?
+    "Tarefa concluída."
+    :
+    "Tarefa reaberta."
+  );
+
+};
+
+
+/* ======================================================
+   RECORD CARD
+====================================================== */
+
+function recordCard(
+  type,
+  item
+){
+
+  let extra = "";
+
+
+  if(type === "project"){
+
+    extra = `
+
+      <div class="progress">
+
+        <i
+          style="width:${Number(item.progress)||0}%"
+        ></i>
+
+      </div>
+
+      <div class="recordmeta">
+
+        ${Number(item.progress)||0}% concluído
+
+      </div>
+
+    `;
+
+  }
+
+
+  if(type === "goal"){
+
+    extra = `
+
+      <div class="progress">
+
+        <i
+          style="width:${Number(item.progress)||0}%"
+        ></i>
+
+      </div>
+
+      <div class="recordmeta">
+
+        ${Number(item.progress)||0}%
+
+        ${
+          item.due
+          ?
+          " • prazo "+esc(item.due)
+          :
+          ""
+        }
+
+      </div>
+
+    `;
+
+  }
+
+
+  if(type === "task"){
+
+    extra = `
+
+      <div class="recordmeta">
+
+        ${esc(item.date || "")}
+
+        ${
+          item.time
+          ?
+          " • "+esc(item.time)
+          :
+          ""
+        }
+
+        • ${esc(item.priority || "Normal")}
+
+      </div>
+
+    `;
+
+  }
+
+
+  if(
+    type === "idea"
+    ||
+    type === "note"
+  ){
+
+    extra = `
+
+      <div class="recordmeta">
+
+        ${esc(
+          item.category ||
+          "Sem categoria"
+        )}
+
+        • ${esc(
+          item.created ||
+          ""
+        )}
+
+      </div>
+
+    `;
+
+  }
+
+
+  return `
+
+    <article class="card record">
+
+      <h3>
+
+        ${
+          item.done
+          ?
+          "☑ "
+          :
+          ""
+        }
+
+        ${esc(item.title)}
+
+        ${
+          item.favorite
+          ?
+          " ⭐"
+          :
+          ""
+        }
+
+      </h3>
+
+
+      ${
+        item.body
+        ?
+        `
+        <p>
+          ${esc(item.body)}
+        </p>
+        `
+        :
+        ""
+      }
+
+
+      ${extra}
+
+
+      <div class="recordactions">
+
+        ${
+          type === "task"
+          ?
+          `
+          <button
+            onclick="toggleTask('${item.id}')"
+          >
+            ${
+              item.done
+              ?
+              "Reabrir"
+              :
+              "Concluir"
+            }
+          </button>
+          `
+          :
+          ""
+        }
+
+
+        <button
+          onclick="openModal(
+            '${type}',
+            findItem(
+              '${type}',
+              '${item.id}'
+            )
+          )"
+        >
+          Editar
+        </button>
+
+
+        ${
+          type === "idea"
+          ||
+          type === "note"
+          ?
+          `
+          <button
+            onclick="favorite(
+              '${type}',
+              '${item.id}'
+            )"
+          >
+            ★
+          </button>
+          `
+          :
+          ""
+        }
+
+
+        <button
+          class="del"
+          onclick="deleteItem(
+            '${type}',
+            '${item.id}'
+          )"
+        >
+          Excluir
+        </button>
+
+      </div>
+
+    </article>
+
+  `;
+
+}
+
+
+/* ======================================================
+   LISTAS
+====================================================== */
+
+function renderList(
+  type,
+  title
+){
+
+  const arr =
+    nexus[
+      type+"s"
+    ] || [];
+
+
+  const target =
+    document.getElementById(
+      type+"s"
+    );
+
+
+  target.innerHTML = `
+
+    <div class="view-title">
+
+      <h2>
+        ${title}
+      </h2>
+
+      <button
+        onclick="openModal('${type}')"
+      >
+        ＋ Novo
+      </button>
+
+    </div>
+
+
+    ${
+      arr.length
+      ?
+      `
+      <div class="listgrid">
+
+        ${
+          arr
+            .map(
+              item =>
+              recordCard(
+                type,
+                item
+              )
+            )
+            .join("")
+        }
+
+      </div>
+      `
+      :
+      `
+      <div class="empty">
+
+        Ainda não há
+        ${title.toLowerCase()}
+        aqui.
+
+        <br><br>
+
+        Clique em
+        “＋ Novo”
+        para começar.
+
+      </div>
+      `
+    }
+
+  `;
+
+}
+
+
+/* ======================================================
+   VIEW
+====================================================== */
+
+function renderView(view){
+
+  if(view === "home")
+    return;
+
+
+  if(view === "ideas")
+    return renderList(
+      "idea",
+      "Ideias"
+    );
+
+
+  if(view === "notes")
+    return renderList(
+      "note",
+      "Notas"
+    );
+
+
+  if(view === "projects")
+    return renderList(
+      "project",
+      "Projetos"
+    );
+
+
+  if(view === "goals")
+    return renderList(
+      "goal",
+      "Objetivos"
+    );
+
+
+  if(view === "tasks")
+    return renderList(
+      "task",
+      "Tarefas"
+    );
+
+
+  if(view === "archive")
+    return renderArchive();
+
+
+  if(view === "favorites")
+    return renderFavorites();
+
+
+  if(view === "trash")
+    return renderTrash();
+
+
+  if(view === "history")
+    return renderHistory();
+
+
+  if(view === "searchView")
+    return renderSearch(
+      document
+        .getElementById(
+          "globalSearch"
+        )
+        .value
+    );
+
+}
+
+
+/* ======================================================
+   ARCHIVE
+====================================================== */
+
+function renderArchive(){
+
+  document.getElementById(
+    "archive"
+  ).innerHTML = `
+
+    <div class="view-title">
+
+      <h2>
+        Arquivo
+      </h2>
+
+    </div>
+
+
+    ${
+      nexus.archive.length
+      ?
+      `
+      <div class="listgrid">
+
+        ${
+          nexus.archive
+            .map(
+              item =>
+              `
+              <article class="card record">
+
+                <h3>
+                  ${esc(
+                    item.title ||
+                    item.name ||
+                    "Registro"
+                  )}
+                </h3>
+
+                <p>
+                  ${esc(
+                    item.body ||
+                    ""
+                  )}
+                </p>
+
+              </article>
+              `
+            )
+            .join("")
+        }
+
+      </div>
+      `
+      :
+      `
+      <div class="empty">
+
+        O arquivo está vazio.
+
+      </div>
+      `
+    }
+
+  `;
+
+}
+
+
+/* ======================================================
+   FAVORITES
+====================================================== */
+
+function renderFavorites(){
+
+  const all = [
+
+    ...nexus.ideas.map(
+      x => ({
+        ...x,
+        _type:"idea"
+      })
+    ),
+
+    ...nexus.notes.map(
+      x => ({
+        ...x,
+        _type:"note"
+      })
+    )
+
+  ].filter(
+    x => x.favorite
+  );
+
+
+  document.getElementById(
+    "favorites"
+  ).innerHTML = `
+
+    <div class="view-title">
+
+      <h2>
+        Favoritos
+      </h2>
+
+    </div>
+
+
+    ${
+      all.length
+      ?
+      `
+      <div class="listgrid">
+
+        ${
+          all
+            .map(
+              item =>
+              recordCard(
+                item._type,
+                item
+              )
+            )
+            .join("")
+        }
+
+      </div>
+      `
+      :
+      `
+      <div class="empty">
+
+        Nenhum favorito ainda.
+
+      </div>
+      `
+    }
+
+  `;
+
+}
+
+
+/* ======================================================
+   TRASH
+====================================================== */
+
+function renderTrash(){
+
+  document.getElementById(
+    "trash"
+  ).innerHTML = `
+
+    <div class="view-title">
+
+      <h2>
+        Lixeira
+      </h2>
+
+      ${
+        nexus.trash.length
+        ?
+        `
+        <button
+          class="btn danger"
+          onclick="emptyTrash()"
+        >
+          Esvaziar
+        </button>
+        `
+        :
+        ""
+      }
+
+    </div>
+
+
+    ${
+      nexus.trash.length
+      ?
+      `
+      <div class="listgrid">
+
+        ${
+          nexus.trash
+            .map(
+              record =>
+              `
+
+              <article
+                class="card record"
+              >
+
+                <h3>
+
+                  ${esc(
+                    record.item.title
+                  )}
+
+                </h3>
+
+                <div class="recordmeta">
+
+                  ${typeName(
+                    record.type
+                  )}
+
+                  • excluído em
+
+                  ${esc(
+                    record.item.deletedAt
+                  )}
+
+                </div>
+
+
+                <div class="recordactions">
+
+                  <button
+                    onclick="restoreItem(
+                      '${record.item.id}'
+                    )"
+                  >
+                    Restaurar
+                  </button>
+
+                </div>
+
+              </article>
+
+              `
+            )
+            .join("")
+        }
+
+      </div>
+      `
+      :
+      `
+      <div class="empty">
+
+        A lixeira está vazia.
+
+      </div>
+      `
+    }
+
+  `;
+
+}
+
+
+/* ======================================================
+   HISTORY
+====================================================== */
+
+function renderHistory(){
+
+  document.getElementById(
+    "history"
+  ).innerHTML = `
+
+    <div class="view-title">
+
+      <h2>
+        Histórico
+      </h2>
+
+    </div>
+
+
+    ${
+      nexus.history.length
+      ?
+      `
+      <div class="card panel">
+
+        ${
+          nexus.history
+            .map(
+              h =>
+              `
+
+              <div class="item">
+
+                <div class="itemmain">
+
+                  <div class="title">
+
+                    ${esc(
+                      h.action
+                    )}
+
+                    —
+
+                    ${esc(
+                      h.name ||
+                      ""
+                    )}
+
+                  </div>
+
+                  <div class="sub">
+
+                    ${
+                      h.type !== "system"
+                      ?
+                      typeName(
+                        h.type
+                      )
+                      :
+                      "Sistema"
+                    }
+
+                    •
+
+                    ${esc(
+                      h.date
+                    )}
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              `
+            )
+            .join("")
+        }
+
+      </div>
+      `
+      :
+      `
+      <div class="empty">
+
+        Nenhuma atividade ainda.
+
+      </div>
+      `
+    }
+
+  `;
+
+}
+
+
+/* ======================================================
+   SEARCH
+====================================================== */
+
+function allRecords(){
+
+  return [
+
+    ...nexus.ideas.map(
+      x => ({
+        ...x,
+        _type:"idea"
+      })
+    ),
+
+    ...nexus.notes.map(
+      x => ({
+        ...x,
+        _type:"note"
+      })
+    ),
+
+    ...nexus.projects.map(
+      x => ({
+        ...x,
+        _type:"project"
+      })
+    ),
+
+    ...nexus.goals.map(
+      x => ({
+        ...x,
+        _type:"goal"
+      })
+    ),
+
+    ...nexus.tasks.map(
+      x => ({
+        ...x,
+        _type:"task"
+      })
+    )
+
+  ];
+
+}
+
+
+function renderSearch(
+  query=""
+){
+
+  const q =
+    query
+      .trim()
+      .toLowerCase();
+
+
+  const results =
+    q
+    ?
+    allRecords()
+      .filter(
+        item =>
+        JSON.stringify(
+          item
+        )
+        .toLowerCase()
+        .includes(q)
+      )
+    :
+    [];
+
+
+  document.getElementById(
+    "searchView"
+  ).innerHTML = `
+
+    <div class="view-title">
+
+      <h2>
+        Busca
+      </h2>
+
+    </div>
+
+
+    <div class="card panel">
+
+      <div class="field">
+
+        <input
+          id="viewSearch"
+          value="${esc(query)}"
+          placeholder="Digite para pesquisar..."
+        >
+
+      </div>
+
+    </div>
+
+    <br>
+
+
+    ${
+      !q
+      ?
+      `
+      <div class="empty">
+
+        Digite alguma coisa
+        para pesquisar no NEXUS.
+
+      </div>
+      `
+      :
+      results.length
+      ?
+      `
+      <div class="listgrid">
+
+        ${
+          results
+            .map(
+              item =>
+              recordCard(
+                item._type,
+                item
+              )
+            )
+            .join("")
+        }
+
+      </div>
+      `
+      :
+      `
+      <div class="empty">
+
+        Nenhum resultado encontrado.
+
+      </div>
+      `
+    }
+
+  `;
+
+
+  const input =
+    document.getElementById(
+      "viewSearch"
+    );
+
+
+  if(input){
+
+    input.oninput =
+      event =>
+      renderSearch(
+        event.target.value
+      );
+
+    input.focus();
+
+  }
+
+}
+
+
+/* ======================================================
+   GLOBAL SEARCH
+====================================================== */
+
+document.getElementById(
+  "globalSearch"
+).addEventListener(
+  "input",
+  event => {
+
+    if(
+      event.target.value.trim()
+    ){
+
+      openView(
+        "searchView"
+      );
+
+    }
+
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      (event.ctrlKey ||
+       event.metaKey)
+      &&
+      event.key.toLowerCase()
+      ===
+      "k"
+    ){
+
+      event.preventDefault();
+
+      document
+        .getElementById(
+          "globalSearch"
+        )
+        .focus();
+
+    }
+
+  }
+);
+
+
+/* ======================================================
+   FIREBASE INFO
+====================================================== */
+
+window.firebaseInfo =
+function(){
+
+  toast(
+    "NEXUS conectado ao Firestore."
+  );
+
+};
+
+
+/* ======================================================
+   THEME
+====================================================== */
+
+window.toggleTheme =
+function(){
+
+  const current =
+    getComputedStyle(
+      document.documentElement
+    )
+    .getPropertyValue(
+      "--bg"
+    )
+    .trim();
+
+
+  document.documentElement
+    .style
+    .setProperty(
+      "--bg",
+      current === "#030814"
+      ?
+      "#0b1422"
+      :
+      "#030814"
+    );
+
+
+  toast(
+    "Tema alternado."
+  );
+
+};
+
+
+/* ======================================================
+   RENDER HOME
+====================================================== */
+
+function renderAll(){
+
+  document.getElementById(
+    "countIdeas"
+  ).textContent =
+    nexus.ideas.length;
+
+
+  document.getElementById(
+    "countProjects"
+  ).textContent =
+    nexus.projects.length;
+
+
+  document.getElementById(
+    "countNotes"
+  ).textContent =
+    nexus.notes.length;
+
+
+  document.getElementById(
+    "countGoals"
+  ).textContent =
+    nexus.goals.length;
+
+
+  document.getElementById(
+    "countTasks"
+  ).textContent =
+    nexus.tasks.filter(
+      x => !x.done
+    ).length;
+
+
+  /* IDEIAS */
+
+  const ideas =
+    nexus.ideas.slice(
+      0,
+      4
+    );
+
+
+  document.getElementById(
+    "homeIdeas"
+  ).innerHTML =
+
+    ideas.length
+    ?
+
+    ideas
+      .map(
+        item =>
+        `
+
+        <div class="item">
+
+          <div
+            class="dot"
+            style="color:var(--orange)"
+          ></div>
+
+          <div class="itemmain">
+
+            <div class="title">
+
+              ${esc(
+                item.title
+              )}
+
+            </div>
+
+            <div class="sub">
+
+              ${esc(
+                item.body ||
+                item.category ||
+                ""
+              )}
+
+            </div>
+
+          </div>
+
+          ${
+            item.favorite
+            ?
+            "⭐"
+            :
+            ""
+          }
+
+        </div>
+
+        `
+      )
+      .join("")
+
+    :
+
+    `
+
+    <div class="empty">
+
+      Nenhuma ideia registrada.
+
+    </div>
+
+    `;
+
+
+  /* PROJECTS */
+
+  const projects =
+    nexus.projects
+      .filter(
+        item =>
+        (Number(
+          item.progress
+        ) || 0)
+        <
+        100
+      )
+      .slice(
+        0,
+        4
+      );
+
+
+  document.getElementById(
+    "homeProjects"
+  ).innerHTML =
+
+    projects.length
+    ?
+
+    projects
+      .map(
+        item =>
+        `
+
+        <div class="item">
+
+          <div class="itemmain">
+
+            <div class="title">
+
+              ${esc(
+                item.title
+              )}
+
+            </div>
+
+            <div class="progress">
+
+              <i
+                style="
+                  width:${Number(
+                    item.progress
+                  ) || 0}%
+                "
+              ></i>
+
+            </div>
+
+          </div>
+
+          <span class="tag blue">
+
+            ${
+              Number(
+                item.progress
+              ) || 0
+            }%
+
+          </span>
+
+        </div>
+
+        `
+      )
+      .join("")
+
+    :
+
+    `
+
+    <div class="empty">
+
+      Nenhum projeto em andamento.
+
+    </div>
+
+    `;
+
+
+  /* NOTES */
+
+  const notes =
+    nexus.notes.slice(
+      0,
+      3
+    );
+
+
+  document.getElementById(
+    "homeNotes"
+  ).innerHTML =
+
+    notes.length
+    ?
+
+    notes
+      .map(
+        item =>
+        `
+
+        <div class="item">
+
+          <div class="itemmain">
+
+            <div class="title">
+
+              ${esc(
+                item.title
+              )}
+
+            </div>
+
+            <div class="sub">
+
+              ${esc(
+                item.body || ""
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+        `
+      )
+      .join("")
+
+    :
+
+    `
+
+    <div class="empty">
+
+      Nenhuma nota registrada.
+
+    </div>
+
+    `;
+
+
+  /* TASKS */
+
+  const tasks =
+    nexus.tasks
+      .filter(
+        item =>
+        !item.done
+      )
+      .slice(
+        0,
+        4
+      );
+
+
+  document.getElementById(
+    "homeTasks"
+  ).innerHTML =
+
+    tasks.length
+    ?
+
+    tasks
+      .map(
+        item =>
+        `
+
+        <div class="item">
+
+          <button
+            class="check"
+            onclick="toggleTask(
+              '${item.id}'
+            )"
+          >
+            □
+          </button>
+
+          <div class="itemmain">
+
+            <div class="title">
+
+              ${esc(
+                item.title
+              )}
+
+            </div>
+
+            <div class="sub">
+
+              ${esc(
+                item.date || ""
+              )}
+
+              ${
+                item.time
+                ?
+                " • "+esc(item.time)
+                :
+                ""
+              }
+
+            </div>
+
+          </div>
+
+          <span
+            class="tag ${
+              item.priority === "Alta"
+              ?
+              "red"
+              :
+              "blue"
+            }"
+          >
+
+            ${esc(
+              item.priority ||
+              "Normal"
+            )}
+
+          </span>
+
+        </div>
+
+        `
+      )
+      .join("")
+
+    :
+
+    `
+
+    <div class="empty">
+
+      Nenhuma tarefa pendente.
+
+    </div>
+
+    `;
+
+
+  /* GOAL */
+
+  const goal =
+    nexus.goals
+      .slice()
+      .sort(
+        (a,b) =>
+        (Number(b.progress)||0)
+        -
+        (Number(a.progress)||0)
+      )[0];
+
+
+  if(goal){
+
+    document.getElementById(
+      "goalName"
+    ).textContent =
+      goal.title;
+
+
+    document.getElementById(
+      "goalDesc"
+    ).textContent =
+      goal.body ||
+      "Objetivo em andamento.";
+
+
+    document.getElementById(
+      "goalPct"
+    ).textContent =
+      (Number(
+        goal.progress
+      ) || 0)
+      +
+      "%";
+
+
+    document
+      .getElementById(
+        "goalRing"
+      )
+      .style
+      .setProperty(
+        "--pct",
+        (Number(
+          goal.progress
+        ) || 0)
+        +
+        "%"
+      );
+
+  }else{
+
+    document.getElementById(
+      "goalName"
+    ).textContent =
+      "Nenhum objetivo";
+
+
+    document.getElementById(
+      "goalDesc"
+    ).textContent =
+      "Crie seu primeiro objetivo.";
+
+
+    document.getElementById(
+      "goalPct"
+    ).textContent =
+      "0%";
+
+
+    document
+      .getElementById(
+        "goalRing"
+      )
+      .style
+      .setProperty(
+        "--pct",
+        "0%"
+      );
+
+  }
+
+
+  /* SUMMARY */
+
+  const completed =
+    nexus.tasks.filter(
+      x => x.done
+    ).length;
+
+
+  const projectsDone =
+    nexus.projects.filter(
+      x =>
+      Number(
+        x.progress
+      ) === 100
+    ).length;
+
+
+  document.getElementById(
+    "summary"
+  ).innerHTML = `
+
+    <div class="item">
+
+      <div class="itemmain">
+
+        <div class="title">
+
+          ${nexus.ideas.length}
+
+        </div>
+
+        <div class="sub">
+
+          Ideias registradas
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="item">
+
+      <div class="itemmain">
+
+        <div class="title">
+
+          ${completed}
+
+        </div>
+
+        <div class="sub">
+
+          Tarefas concluídas
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="item">
+
+      <div class="itemmain">
+
+        <div class="title">
+
+          ${projectsDone}
+
+        </div>
+
+        <div class="sub">
+
+          Projetos concluídos
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  renderView(
+    currentView
+  );
+
+}
+
+
+/* ======================================================
+   INICIALIZAÇÃO
+====================================================== */
+
+renderAll();
+
+</script>
+
+</body>
+</html>
