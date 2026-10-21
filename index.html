@@ -806,6 +806,45 @@ button{cursor:pointer}
 }
 
 /* =========================
+   LOGIN FIREBASE
+========================= */
+.auth-screen{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:
+    radial-gradient(circle at 70% 10%,#12365c88,transparent 35%),
+    radial-gradient(circle at 20% 90%,#512b7055,transparent 35%),
+    #030814f7;
+  backdrop-filter:blur(18px);
+}
+.auth-screen.hidden{display:none!important}
+.auth-card{
+  width:min(420px,100%);
+  padding:28px;
+  background:linear-gradient(145deg,#0b1f39f5,#051020f5);
+  border:1px solid #1c5b83;
+  border-radius:20px;
+  box-shadow:0 25px 90px #000b;
+}
+.auth-brand{display:flex;align-items:center;gap:13px;margin-bottom:22px}
+.auth-brand .logo{flex-shrink:0}
+.auth-card h2{margin:0 0 7px;font-size:23px}
+.auth-card p{color:var(--muted);font-size:12px;line-height:1.6}
+.auth-card .field{margin-top:14px}
+.auth-card .field input{font-size:14px;padding:13px}
+.auth-submit{
+  width:100%;margin-top:18px;padding:12px;
+  background:#0877e4;border:1px solid #43baff;
+  border-radius:10px;color:#fff;font-weight:700;
+}
+.auth-error{color:#ff8298;font-size:12px;min-height:18px;margin-top:12px}
+.auth-note{font-size:10px!important;margin-top:18px}
+
+/* =========================
    RESPONSIVO
 ========================= */
 
@@ -1058,6 +1097,10 @@ button{cursor:pointer}
 
       <button onclick="toast('Nenhuma notificação nova.')">
         ♧
+      </button>
+
+      <button onclick="logoutNexus()" title="Sair da conta" aria-label="Sair da conta">
+        ⇥
       </button>
 
       <button onclick="toggleTheme()">
@@ -1457,6 +1500,33 @@ button{cursor:pointer}
 </div>
 
 
+<section id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="logo">N</div>
+      <div>
+        <h2>NEXUS</h2>
+        <small>SEU MUNDO. ORGANIZADO.</small>
+      </div>
+    </div>
+    <h2>Acesse seu sistema</h2>
+    <p>Entre com o e-mail e a senha da sua conta Firebase para sincronizar seus dados com segurança.</p>
+    <form id="authForm">
+      <div class="field">
+        <label for="authEmail">E-mail</label>
+        <input id="authEmail" type="email" autocomplete="username" required placeholder="seu@email.com">
+      </div>
+      <div class="field">
+        <label for="authPassword">Senha</label>
+        <input id="authPassword" type="password" autocomplete="current-password" required placeholder="Sua senha do Firebase">
+      </div>
+      <button class="auth-submit" id="authSubmit" type="submit">Entrar no NEXUS</button>
+      <div class="auth-error" id="authError" role="alert"></div>
+    </form>
+    <p class="auth-note">Seus dados antigos serão mantidos. Não compartilhe sua senha com ninguém.</p>
+  </div>
+</section>
+
 <div class="toast" id="toastBox"></div>
 
 <div
@@ -1480,10 +1550,18 @@ import {
 import {
   getFirestore,
   doc,
+  getDoc,
   onSnapshot,
   setDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
 
 /* ======================================================
@@ -1524,24 +1602,17 @@ const db =
 
 
 /*
-  SEM LOGIN:
-
-  Usaremos um documento fixo:
-
-  coleção: nexus
-  documento: public
-
-  Isso permite que o mesmo NEXUS
-  seja acessado de qualquer aparelho
-  usando o mesmo banco.
+  DADOS E ACESSO:
+  Documento antigo preservado: nexus/public
+  Documento privado do usuário: users/{UID}/nexus/main
 */
 
-const nexusRef =
-  doc(
-    db,
-    "nexus",
-    "public"
-  );
+const auth = getAuth(app);
+const legacyRef = doc(db, "nexus", "public");
+
+let nexusRef = null;
+let currentUser = null;
+let databaseReady = false;
 
 
 /* ======================================================
@@ -1752,90 +1823,162 @@ function cleanData(data){
 
 
 /* ======================================================
-   ESCUTAR FIRESTORE EM TEMPO REAL
+   LOGIN E MIGRAÇÃO SEGURA DOS DADOS ANTIGOS
 ====================================================== */
 
-unsubscribe =
-  onSnapshot(
+function emptyDatabase(){
+  return {
+    ideas:[],
+    notes:[],
+    projects:[],
+    goals:[],
+    tasks:[],
+    archive:[],
+    trash:[],
+    history:[]
+  };
+}
 
-    nexusRef,
+async function startUserDatabase(user){
+  currentUser = user;
+  databaseReady = false;
+  saving = false;
 
-    snapshot => {
+  if(unsubscribe){
+    unsubscribe();
+    unsubscribe = null;
+  }
 
-      if(snapshot.exists()){
+  nexusRef = doc(db, "users", user.uid, "nexus", "main");
+  firebaseStatus("☁ Verificando seus dados...");
 
-        nexus =
-          cleanData(
-            snapshot.data()
-          );
+  try{
+    const userSnapshot = await getDoc(nexusRef);
 
+    if(userSnapshot.exists()){
+      nexus = cleanData(userSnapshot.data());
+    }else{
+      // Copia os dados antigos; o documento nexus/public nunca é apagado.
+      const legacySnapshot = await getDoc(legacyRef);
+
+      if(legacySnapshot.exists()){
+        nexus = cleanData(legacySnapshot.data());
+        await setDoc(nexusRef, {
+          ...nexus,
+          migratedFromLegacy: true,
+          migratedAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
       }else{
-
-        nexus = {
-
-          ideas:[],
-          notes:[],
-          projects:[],
-          goals:[],
-          tasks:[],
-          archive:[],
-          trash:[],
-          history:[]
-
-        };
-
-        /*
-          Cria o documento inicial.
-        */
-
-        setDoc(
-          nexusRef,
-          nexus
-        )
-        .catch(
-          error => {
-
-            console.error(
-              error
-            );
-
-            firebaseStatus(
-              "⚠ Erro ao criar banco",
-              true
-            );
-
-          }
-        );
-
+        nexus = emptyDatabase();
+        await setDoc(nexusRef, {
+          ...nexus,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
       }
-
-      firebaseStatus(
-        "☁ Firestore conectado"
-      );
-
-      renderAll();
-
-    },
-
-    error => {
-
-      console.error(
-        "Firestore:",
-        error
-      );
-
-      firebaseStatus(
-        "⚠ Erro no Firestore",
-        true
-      );
-
-      toast(
-        "Não foi possível acessar o banco."
-      );
-
     }
 
-  );
+    databaseReady = true;
+    document.getElementById("authScreen").classList.add("hidden");
+    document.getElementById("authPassword").value = "";
+
+    unsubscribe = onSnapshot(
+      nexusRef,
+      snapshot => {
+        if(snapshot.exists()){
+          nexus = cleanData(snapshot.data());
+          databaseReady = true;
+          firebaseStatus("☁ Firestore conectado");
+          renderAll();
+        }else{
+          firebaseStatus("⚠ Documento não encontrado", true);
+        }
+      },
+      error => {
+        console.error("Firestore:", error);
+        firebaseStatus("⚠ Erro no Firestore", true);
+        toast("Não foi possível sincronizar o banco.");
+      }
+    );
+  }catch(error){
+    console.error("Falha ao preparar o banco:", error);
+    databaseReady = false;
+    document.getElementById("authScreen").classList.remove("hidden");
+    const errorBox = document.getElementById("authError");
+    errorBox.textContent =
+      error.code === "permission-denied" ||
+      error.code === "firestore/permission-denied"
+        ? "Acesso negado pelas regras do Firestore. Confira as regras privadas antes de tentar novamente."
+        : "Não foi possível carregar os dados. Confira as regras do Firestore e tente novamente.";
+    firebaseStatus("⚠ Erro no Firestore", true);
+  }
+}
+
+document.getElementById("authForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+  const errorBox = document.getElementById("authError");
+  const submit = document.getElementById("authSubmit");
+
+  errorBox.textContent = "";
+  submit.disabled = true;
+  submit.textContent = "Entrando...";
+
+  try{
+    await signInWithEmailAndPassword(auth, email, password);
+  }catch(error){
+    console.error("Login Firebase:", error);
+    const messages = {
+      "auth/invalid-credential":"E-mail ou senha incorretos.",
+      "auth/invalid-email":"Digite um e-mail válido.",
+      "auth/user-disabled":"Esta conta está desativada.",
+      "auth/too-many-requests":"Muitas tentativas. Aguarde um pouco e tente novamente."
+    };
+    errorBox.textContent = messages[error.code] || "Não foi possível entrar. Confira o e-mail, a senha e a configuração do Firebase Authentication.";
+  }finally{
+    submit.disabled = false;
+    submit.textContent = "Entrar no NEXUS";
+  }
+});
+
+window.logoutNexus = async function(){
+  try{
+    databaseReady = false;
+    if(unsubscribe){
+      unsubscribe();
+      unsubscribe = null;
+    }
+    await signOut(auth);
+    currentUser = null;
+    nexusRef = null;
+    document.getElementById("authScreen").classList.remove("hidden");
+    document.getElementById("authError").textContent = "";
+    firebaseStatus("☁ Entre para conectar");
+  }catch(error){
+    console.error("Logout Firebase:", error);
+    toast("Não foi possível sair da conta.");
+  }
+};
+
+onAuthStateChanged(auth, user => {
+  if(user){
+    document.getElementById("authError").textContent = "";
+    startUserDatabase(user);
+  }else{
+    currentUser = null;
+    nexusRef = null;
+    databaseReady = false;
+    if(unsubscribe){
+      unsubscribe();
+      unsubscribe = null;
+    }
+    document.getElementById("authScreen").classList.remove("hidden");
+    firebaseStatus("☁ Entre para conectar");
+  }
+});
 
 
 /* ======================================================
@@ -1843,6 +1986,11 @@ unsubscribe =
 ====================================================== */
 
 async function saveDatabase(){
+
+  if(!databaseReady || !nexusRef){
+    toast("Entre na sua conta antes de salvar.");
+    return;
+  }
 
   if(saving)return;
 
