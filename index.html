@@ -1032,6 +1032,26 @@ button{cursor:pointer}
 .mod-section .actions{display:flex;gap:6px;margin-top:8px;justify-content:flex-end}.mod-section .mini{font-size:10px;padding:5px 8px;border:1px solid #294864;background:#0a1b2e;color:#bcd2e7;border-radius:7px}
 .mod-section .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.mod-section .filters input,.mod-section .filters select{max-width:220px}.mod-section .field{display:grid;gap:6px;margin-bottom:13px}.mod-section .field label{font-size:11px;color:#b7cce0}.mod-section .field input,.mod-section .field select,.mod-section .field textarea,.mod-section .filters input,.mod-section .filters select{width:100%;background:#041020;border:1px solid #25435e;color:var(--text);border-radius:9px;padding:11px;outline:none}
 .mod-section .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.mod-section .span2{grid-column:1/-1}.mod-section .progress{height:7px;border-radius:10px;background:#142c43;overflow:hidden;margin:10px 0}.mod-section .progress span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:10px}.mod-section .habit-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.mod-section .check{width:35px;height:35px;border-radius:10px;border:1px solid #2d5270;background:#0b2035;color:var(--green);font-size:18px}.mod-section .check.done{background:#0c493b;border-color:#17e6a1}.mod-section .daystrip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:15px 0}.mod-section .day{padding:9px 2px;text-align:center;border:1px solid #1d3c57;border-radius:9px;color:var(--muted);font-size:9px}.mod-section .day b{display:block;color:var(--text);font-size:12px;margin-top:5px}.mod-section .day.today{border-color:var(--blue);background:#0d2b48}
+/* NEXUS OS — painel central */
+.nexus-dashboard{padding-top:8px}
+.dash-welcome{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:26px 28px;border:1px solid #1a4262;border-radius:18px;background:radial-gradient(ellipse at 82% 5%,#183a68 0,transparent 42%),linear-gradient(120deg,#091b30,#071326 70%);position:relative;overflow:hidden}
+.dash-welcome:after{content:"N";position:absolute;right:7%;top:-55px;font-size:230px;font-weight:900;color:#ffffff08;pointer-events:none}
+.eyebrow{font-size:9px;letter-spacing:2px;color:#64bfff;font-weight:800}
+.dash-welcome h2{font-size:clamp(24px,3vw,36px);margin:10px 0 7px;letter-spacing:-1.2px}.dash-welcome h2 span{background:linear-gradient(90deg,#62c6ff,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dash-welcome p{font-size:12px;color:#8fa9c2;margin:0}.dash-actions{display:flex;gap:9px;position:relative;z-index:1}.dash-actions .btn{white-space:nowrap}
+.dash-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
+.dash-metric{padding:17px 18px;border:1px solid #173653;border-radius:14px;background:linear-gradient(145deg,#0b1d32,#071426);min-width:0}
+.dash-metric-top{display:flex;justify-content:space-between;align-items:center;color:#7895b0;font-size:9px;letter-spacing:1px;font-weight:800}.dash-metric-top i{font-style:normal;color:#4dbdff;font-size:17px}
+.dash-metric>strong{display:block;font-size:clamp(20px,2vw,27px);margin:12px 0 5px;letter-spacing:-.6px;overflow-wrap:anywhere}.dash-metric small{color:#7892ab;font-size:10px}
+.dash-main-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:13px}
+.dash-panel{border:1px solid #173653;border-radius:15px;background:linear-gradient(145deg,#091a2e,#061222);padding:18px;min-width:0}
+.dash-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.dash-panel-head h3{font-size:15px;margin:5px 0 0}.text-action{border:0;background:transparent;color:#65bfff;font-size:10px;cursor:pointer;white-space:nowrap}
+.dash-list .entry{border:0;border-top:1px solid #142e47;border-radius:0;background:transparent;padding:12px 2px;margin:0}.dash-list .entry:first-child{border-top:0}.dash-list .entry-title{font-size:11px}.dash-list .entry-sub{font-size:9px}
+.dash-ring-wrap{display:flex;align-items:center;gap:18px;padding:9px 2px 4px}.dash-ring{--pct:0%;width:100px;height:100px;border-radius:50%;display:grid;place-items:center;flex:none;background:conic-gradient(#29b8ff var(--pct),#172e47 0);position:relative}.dash-ring:before{content:"";position:absolute;inset:8px;background:#091a2e;border-radius:50%}.dash-ring>div{position:relative;text-align:center}.dash-ring strong{display:block;font-size:21px}.dash-ring small{font-size:8px;color:#7e9bb5}.dash-ring-wrap>div:last-child strong{font-size:12px}.dash-ring-wrap p{font-size:10px;line-height:1.5;color:#829bb3;max-width:190px}
+.dash-shortcut-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.dash-shortcut-grid button{text-align:left;border:1px solid #1b3b57;background:#0a1c30;border-radius:11px;padding:12px;color:#e8f4ff;cursor:pointer;transition:.2s}.dash-shortcut-grid button:hover{border-color:#3b9bd6;transform:translateY(-2px);background:#0d2943}.dash-shortcut-grid b{display:block;color:#55bfff;font-size:17px;margin-bottom:8px}.dash-shortcut-grid span{display:block;font-size:10px;font-weight:750}.dash-shortcut-grid small{display:block;color:#7894ad;font-size:9px;margin-top:4px}
+.dash-footer{display:flex;justify-content:space-between;gap:10px;margin:16px 2px 0;color:#54718c;font-size:8px;letter-spacing:1px}.dash-footer i{display:inline-block;width:6px;height:6px;background:#19dca4;border-radius:50%;margin-right:6px;box-shadow:0 0 10px #19dca4}
+@media(max-width:950px){.dash-metrics{grid-template-columns:1fr 1fr}.dash-main-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.dash-welcome{display:block;padding:20px}.dash-actions{margin-top:18px;flex-wrap:wrap}.dash-metrics{gap:8px}.dash-metric{padding:13px}.dash-main-grid{grid-template-columns:1fr}.dash-footer{flex-direction:column}.dash-shortcut-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.mod-grid{grid-template-columns:1fr 1fr}.mod-two-col{grid-template-columns:1fr}}@media(max-width:650px){.mod-grid{grid-template-columns:1fr 1fr;gap:9px}.mod-two-col{grid-template-columns:1fr}.mod-section .formgrid{grid-template-columns:1fr}.mod-section .span2{grid-column:auto}}
 
 </style>
@@ -1447,13 +1467,41 @@ button{cursor:pointer}
 
 
 <!-- MÓDULOS FINANCEIRO / AGENDA / HÁBITOS -->
- <section class="view mod-section" id="overview">
-  <div class="grid">
-   <div class="card"><div class="stat-label">SALDO DO MÊS</div><div class="stat-value blue" id="ovBalance">R$ 0,00</div><div class="stat-foot">Entradas menos despesas</div></div>
-   <div class="card"><div class="stat-label">COMPROMISSOS FUTUROS</div><div class="stat-value purple" id="ovEvents">0</div><div class="stat-foot">Eventos ainda não concluídos</div></div>
-   <div class="card"><div class="stat-label">HÁBITOS CONCLUÍDOS HOJE</div><div class="stat-value positive" id="ovHabits">0/0</div><div class="stat-foot">Pequenas ações, grandes resultados</div></div>
+ <section class="view mod-section nexus-dashboard" id="overview">
+  <div class="dash-welcome">
+   <div><div class="eyebrow">NEXUS OS / CENTRAL DE COMANDO</div><h2>Seu universo, <span>sob controle.</span></h2><p id="dashDate">Organize o agora. Construa o próximo.</p></div>
+   <div class="dash-actions"><button class="btn primary" onclick="openModuleModal('event')">＋ Compromisso</button><button class="btn" onclick="openModuleModal('transaction')">＋ Lançamento</button></div>
   </div>
-  <div class="two-col"><div class="card"><h4>Próximos compromissos</h4><div class="list" id="ovUpcoming"></div></div><div class="card"><h4>Movimentações recentes</h4><div class="list" id="ovTransactions"></div></div></div>
+  <div class="dash-metrics">
+   <article class="dash-metric"><div class="dash-metric-top"><span>RESULTADO DO MÊS</span><i>◈</i></div><strong id="ovBalance">R$ 0,00</strong><small>Entradas menos despesas</small></article>
+   <article class="dash-metric"><div class="dash-metric-top"><span>AGENDA ABERTA</span><i>▦</i></div><strong id="ovEvents">0</strong><small>Compromissos futuros</small></article>
+   <article class="dash-metric"><div class="dash-metric-top"><span>ROTINA DE HOJE</span><i>✧</i></div><strong id="ovHabits">0/0</strong><small>Hábitos concluídos</small></article>
+   <article class="dash-metric"><div class="dash-metric-top"><span>DESPESAS DO MÊS</span><i>↘</i></div><strong id="ovExpense">R$ 0,00</strong><small>Controle seus gastos</small></article>
+  </div>
+  <div class="dash-main-grid">
+   <div class="dash-panel dash-focus">
+    <div class="dash-panel-head"><div><span class="eyebrow">SEU DIA</span><h3>Próximos compromissos</h3></div><button class="text-action" onclick="openView('agenda')">Abrir agenda ↗</button></div>
+    <div id="ovUpcoming" class="dash-list"></div>
+   </div>
+   <div class="dash-panel dash-routine">
+    <div class="dash-panel-head"><div><span class="eyebrow">CONSISTÊNCIA</span><h3>Hábitos de hoje</h3></div><button class="text-action" onclick="openView('habits')">Ver hábitos ↗</button></div>
+    <div class="dash-ring-wrap"><div class="dash-ring" id="dashRing"><div><strong id="dashHabitPct">0%</strong><small>concluído</small></div></div><div><strong id="dashHabitLabel">Vamos começar?</strong><p id="dashHabitHint">Pequenas ações criam grandes mudanças.</p></div></div>
+   </div>
+   <div class="dash-panel dash-spending">
+    <div class="dash-panel-head"><div><span class="eyebrow">VISÃO FINANCEIRA</span><h3>Movimentações recentes</h3></div><button class="text-action" onclick="openView('finance')">Financeiro ↗</button></div>
+    <div id="ovTransactions" class="dash-list"></div>
+   </div>
+   <div class="dash-panel dash-shortcuts">
+    <div class="dash-panel-head"><div><span class="eyebrow">ACESSO RÁPIDO</span><h3>O que vamos fazer?</h3></div></div>
+    <div class="dash-shortcut-grid">
+     <button onclick="openModuleModal('transaction')"><b>＋</b><span>Novo lançamento</span><small>Registrar entrada ou saída</small></button>
+     <button onclick="openModuleModal('event')"><b>◷</b><span>Marcar compromisso</span><small>Planejar um horário</small></button>
+     <button onclick="openModuleModal('habit')"><b>✧</b><span>Criar hábito</span><small>Construir consistência</small></button>
+     <button onclick="openView('home')"><b>▱</b><span>Meus projetos</span><small>Continuar de onde parou</small></button>
+    </div>
+   </div>
+  </div>
+  <div class="dash-footer"><span><i></i> NEXUS sincronizado com sua conta</span><span>UM SISTEMA. TODA A SUA VIDA.</span></div>
  </section>
  <section class="view mod-section" id="finance">
   <div class="section-head"><h3>Visão financeira</h3><button class="btn primary" onclick="openModuleModal('transaction')">＋ Nova movimentação</button></div>
@@ -4797,7 +4845,7 @@ window.mRenderAgenda=mRenderAgenda;window.toggleModuleEvent=async id=>{const x=m
 function mRenderHabits(){const active=mData.habits.filter(x=>x.active!==false),done=mData.completions[mToday]||{},count=active.filter(x=>done[x.id]).length,pct=active.length?Math.round(count/active.length*100):0;m$('habitProgress').textContent=pct+'%';m$('habitBar').style.width=pct+'%';m$('habitCount').textContent=`${count} de ${active.length} hábitos concluídos`;m$('habitTotal').textContent=active.length;m$('habitToday').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long'});m$('habitList').innerHTML=active.length?active.map(x=>`<div class="entry habit-row"><div class="entry-main"><div class="entry-title">${mEsc(x.title)}</div><div class="entry-sub">${mEsc(x.frequency||'Diário')}${x.time?' · '+mEsc(x.time):''}${x.note?' · '+mEsc(x.note):''}</div></div><div style="display:flex;align-items:center;gap:8px"><button class="check ${done[x.id]?'done':''}" onclick="toggleModuleHabit('${x.id}')">${done[x.id]?'✓':'○'}</button><button class="mini" onclick="editModuleRecord('habit','${x.id}')">Editar</button><button class="mini" onclick="deleteModuleRecord('habit','${x.id}')">×</button></div></div>`).join(''):'<div class="empty">Adicione seu primeiro hábito para começar a acompanhar sua rotina.</div>';
 const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const key=mLocalDate(d);days.push({key,label:d.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.',''),num:d.getDate(),isToday:key===mToday})}m$('weekStrip').innerHTML=days.map(d=>`<div class="day ${d.isToday?'today':''}">${mEsc(d.label)}<b>${d.num}</b></div>`).join('')}
 window.toggleModuleHabit=async id=>{if(!mData.completions[mToday])mData.completions[mToday]={};mData.completions[mToday][id]=!mData.completions[mToday][id];await mSave();mRenderAll()};
-function mRenderOverview(){const m=mMonthTotals();m$('ovBalance').textContent=mMoney(m.balance);m$('ovBalance').className='stat-value '+(m.balance>=0?'blue':'negative');const events=mData.events.filter(x=>!x.done&&x.date>=mToday).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));m$('ovEvents').textContent=events.length;const active=mData.habits.filter(x=>x.active!==false),done=mData.completions[mToday]||{};m$('ovHabits').textContent=active.filter(x=>done[x.id]).length+'/'+active.length;m$('ovUpcoming').innerHTML=events.slice(0,4).map(x=>`<div class="entry"><div class="entry-main"><div class="entry-title">${mEsc(x.title)}</div><div class="entry-sub">${mFmtDate(x.date)} · ${mEsc(x.time||'Sem horário')}</div></div></div>`).join('')||'<div class="empty">Sua agenda está livre por enquanto.</div>';m$('ovTransactions').innerHTML=[...mData.transactions].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,4).map(x=>`<div class="entry"><div class="entry-main"><div class="entry-title">${mEsc(x.title)}</div><div class="entry-sub">${mEsc(x.category)} · ${mFmtDate(x.date)}</div></div><div class="entry-amount ${x.kind==='income'?'positive':'negative'}">${x.kind==='income'?'+':'−'}${mMoney(x.amount)}</div></div>`).join('')||'<div class="empty">Nenhuma movimentação registrada.</div>'}
+function mRenderOverview(){const m=mMonthTotals();m$('ovBalance').textContent=mMoney(m.balance);m$('ovBalance').className='stat-value '+(m.balance>=0?'blue':'negative');if(m$('ovExpense'))m$('ovExpense').textContent=mMoney(m.expense);if(m$('dashDate'))m$('dashDate').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});const events=mData.events.filter(x=>!x.done&&x.date>=mToday).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));m$('ovEvents').textContent=events.length;const active=mData.habits.filter(x=>x.active!==false),done=mData.completions[mToday]||{};m$('ovHabits').textContent=active.filter(x=>done[x.id]).length+'/'+active.length;const habitPct=active.length?Math.round(active.filter(x=>done[x.id]).length/active.length*100):0;if(m$('dashHabitPct'))m$('dashHabitPct').textContent=habitPct+'%';if(m$('dashRing'))m$('dashRing').style.setProperty('--pct',habitPct+'%');if(m$('dashHabitLabel'))m$('dashHabitLabel').textContent=active.length?(habitPct===100?'Tudo concluído!':habitPct===0?'Hora de começar':'Você está no caminho'):'Nenhum hábito cadastrado';if(m$('dashHabitHint'))m$('dashHabitHint').textContent=active.length?`${active.filter(x=>done[x.id]).length} de ${active.length} hábitos feitos hoje.`:'Adicione hábitos para acompanhar sua evolução.';m$('ovUpcoming').innerHTML=events.slice(0,4).map(x=>`<div class="entry"><div class="entry-main"><div class="entry-title">${mEsc(x.title)}</div><div class="entry-sub">${mFmtDate(x.date)} · ${mEsc(x.time||'Sem horário')}</div></div></div>`).join('')||'<div class="empty">Sua agenda está livre por enquanto.</div>';m$('ovTransactions').innerHTML=[...mData.transactions].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,4).map(x=>`<div class="entry"><div class="entry-main"><div class="entry-title">${mEsc(x.title)}</div><div class="entry-sub">${mEsc(x.category)} · ${mFmtDate(x.date)}</div></div><div class="entry-amount ${x.kind==='income'?'positive':'negative'}">${x.kind==='income'?'+':'−'}${mMoney(x.amount)}</div></div>`).join('')||'<div class="empty">Nenhuma movimentação registrada.</div>'}
 function mRenderAll(){mRenderOverview();mRenderFinance();mRenderAgenda();mRenderHabits()}
 m$('financeMonth').value=mToday.slice(0,7);m$('agendaDate').value='';
 window.addEventListener('beforeunload',()=>{if(mUnsub)mUnsub()});
