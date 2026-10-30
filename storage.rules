@@ -1,0 +1,16 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Extratos privados: cada usuário acessa somente a própria pasta.
+    match /users/{userId}/statements/{fileName} {
+      allow read, delete: if request.auth != null
+                          && request.auth.uid == userId;
+      allow create, update: if request.auth != null
+                            && request.auth.uid == userId
+                            && request.resource.size <= 15 * 1024 * 1024
+                            && request.resource.contentType.matches(
+                              'application/pdf|image/jpeg|image/png|image/webp'
+                            );
+    }
+  }
+}
