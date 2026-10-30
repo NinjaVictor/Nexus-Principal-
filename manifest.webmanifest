@@ -1,0 +1,18 @@
+{
+  "name": "NEXUS OS — Ultimate Edition",
+  "short_name": "NEXUS OS",
+  "description": "Seu centro de comando pessoal.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#08090c",
+  "theme_color": "#08090c",
+  "icons": [
+    {
+      "src": "./nexus-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
