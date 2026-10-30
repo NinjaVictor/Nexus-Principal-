@@ -5198,7 +5198,8 @@ window.mobileGo=function(view){
  window.toggleMobileMenu(false);
  window.openView(view);
 };
-\n// Instalação progressiva: o shell abre mesmo quando a conexão oscila.
+
+// Instalação progressiva: o shell abre mesmo quando a conexão oscila.
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").catch(err => console.warn("NEXUS offline shell:", err));
