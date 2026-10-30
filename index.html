@@ -2179,7 +2179,11 @@ function cleanData(data){
     history:
       Array.isArray(data?.history)
       ? data.history
-      : []
+      : [],
+    transactions:Array.isArray(data?.transactions)?data.transactions:[],
+    events:Array.isArray(data?.events)?data.events:[],
+    habits:Array.isArray(data?.habits)?data.habits:[],
+    completions:data?.completions&&typeof data.completions==='object'?data.completions:{}
 
   };
 
@@ -2244,6 +2248,9 @@ async function startUserDatabase(user){
     }
 
     databaseReady = true;
+    mRef = nexusRef;
+    mReady = true;
+    mSetData(userSnapshot.exists() ? userSnapshot.data() : nexus);
     document.getElementById("authScreen").classList.add("hidden");
     document.getElementById("authPassword").value = "";
 
@@ -2253,6 +2260,9 @@ async function startUserDatabase(user){
         if(snapshot.exists()){
           nexus = cleanData(snapshot.data());
           databaseReady = true;
+          mRef = nexusRef;
+          mReady = true;
+          mSetData(snapshot.data());
           firebaseStatus("☁ Firestore conectado");
           renderAll();
         }else{
@@ -2318,6 +2328,8 @@ window.logoutNexus = async function(){
     await signOut(auth);
     currentUser = null;
     nexusRef = null;
+    mReady = false;
+    mRef = null;
     document.getElementById("authScreen").classList.remove("hidden");
     document.getElementById("authError").textContent = "";
     firebaseStatus("☁ Entre para conectar");
@@ -2335,6 +2347,8 @@ onAuthStateChanged(auth, user => {
     currentUser = null;
     nexusRef = null;
     databaseReady = false;
+    mReady = false;
+    mRef = null;
     if(unsubscribe){
       unsubscribe();
       unsubscribe = null;
@@ -2377,6 +2391,10 @@ async function saveDatabase(){
         archive:nexus.archive,
         trash:nexus.trash,
         history:nexus.history,
+        transactions:mData.transactions,
+        events:mData.events,
+        habits:mData.habits,
+        completions:mData.completions,
         updatedAt:serverTimestamp()
       }
     );
@@ -5023,23 +5041,8 @@ renderAll();
 const mBlank=()=>({transactions:[],events:[],habits:[],completions:{}});let mData=mBlank(),mRef=null,mUnsub=null,mReady=false,mEditing=null;
 const m$=id=>document.getElementById(id);const mLocalDate=(d=new Date())=>{const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`};const mUid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);const mEsc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const mMoney=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});const mFmtDate=s=>s?new Date(s+'T12:00:00').toLocaleDateString('pt-BR'):'Sem data';const mToday=mLocalDate();
 function mToast(s){toast(s)}function mStatus(s,bad=false){m$('firebaseStatus').textContent='● '+s;m$('firebaseStatus').style.color=bad?'var(--red)':'var(--green)'}
-async function mSave(){if(!mReady||!mRef){mToast('Entre na sua conta antes de salvar.');return}try{mStatus('Salvando...');await setDoc(mRef,{...mData,updatedAt:serverTimestamp()},{merge:true});mStatus('Sincronizado')}catch(e){console.error(e);mStatus('Erro ao salvar',true);mToast('Não foi possível salvar os dados.')}}
-function mSetData(raw){mData={transactions:Array.isArray(raw.transactions)?raw.transactions:[],events:Array.isArray(raw.events)?raw.events:[],habits:Array.isArray(raw.habits)?raw.habits:[],completions:raw.completions&&typeof raw.completions==='object'?raw.completions:{}};mRenderAll()}
-async function startModulesDatabase(user){
-  if(mUnsub){mUnsub();mUnsub=null;}
-  if(!user){mReady=false;mRef=null;return;}
-  mRef=doc(db,'users',user.uid,'nexus_modules','main');
-  mStatus('Verificando módulos...');
-  try{
-    const snap=await getDoc(mRef);
-    if(!snap.exists()) await setDoc(mRef,{...mBlank(),createdAt:serverTimestamp()},{merge:true});
-    mReady=true;
-    mUnsub=onSnapshot(mRef,s=>{
-      if(s.exists()){mSetData(s.data());mReady=true;mStatus('NEXUS sincronizado');}
-    },err=>{console.error(err);mStatus('Erro nos módulos',true);});
-  }catch(err){console.error(err);mStatus('Falha nos módulos',true);mToast('Confira as regras do Firestore para nexus_modules.');}
-}
-onAuthStateChanged(auth,user=>startModulesDatabase(user));
+async function mSave(){if(!mReady||!mRef){mToast('Aguarde a conexão do NEXUS antes de importar.');return}try{await setDoc(mRef,{transactions:mData.transactions,events:mData.events,habits:mData.habits,completions:mData.completions,updatedAt:serverTimestamp()},{merge:true});mStatus('NEXUS sincronizado')}catch(e){console.error(e);mStatus('Erro ao salvar',true);mToast('Não foi possível sincronizar o Financeiro. Verifique as regras do Firestore.');throw e}}
+function mSetData(raw){mData={transactions:Array.isArray(raw.transactions)?raw.transactions:[],events:Array.isArray(raw.events)?raw.events:[],habits:Array.isArray(raw.habits)?raw.habits:[],completions:raw.completions&&typeof raw.completions==='object'?raw.completions:{}}
 function openModuleModal(type,item=null){mEditing=item?{type,id:item.id}:null;m$('modModalTitle').textContent=(item?'Editar ':'Novo ')+({transaction:'movimentação',event:'compromisso',habit:'hábito'}[type]);let html='';if(type==='transaction'){html=`<div class="formgrid"><div class="field"><label>Descrição</label><input name="title" required maxlength="70" value="${mEsc(item?.title||'')}" placeholder="Ex.: Mercado"></div><div class="field"><label>Valor (R$)</label><input name="amount" type="number" min="0.01" step="0.01" required value="${item?.amount??''}" placeholder="0,00"></div><div class="field"><label>Tipo</label><select name="kind"><option value="expense" ${item?.kind!=='income'?'selected':''}>Despesa</option><option value="income" ${item?.kind==='income'?'selected':''}>Entrada</option></select></div><div class="field"><label>Categoria</label><select name="category">${['Moradia','Alimentação','Transporte','Lazer','Saúde','Educação','Salário','Investimentos','Outros'].map(x=>`<option ${item?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field span2"><label>Data</label><input name="date" type="date" required value="${item?.date||mToday}"></div><div class="field span2"><label>Observação (opcional)</label><textarea name="note">${mEsc(item?.note||'')}</textarea></div></div>`}else if(type==='event'){html=`<div class="field"><label>Título</label><input name="title" required maxlength="80" value="${mEsc(item?.title||'')}" placeholder="Ex.: Reunião"></div><div class="formgrid"><div class="field"><label>Data</label><input name="date" type="date" required value="${item?.date||mToday}"></div><div class="field"><label>Horário</label><input name="time" type="time" value="${item?.time||'09:00'}"></div><div class="field"><label>Categoria</label><select name="category">${['Pessoal','Trabalho','Estudos','Saúde','Lazer','Outro'].map(x=>`<option ${item?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>Local (opcional)</label><input name="place" value="${mEsc(item?.place||'')}" placeholder="Onde será?"></div></div><div class="field"><label>Detalhes</label><textarea name="note">${mEsc(item?.note||'')}</textarea></div>`}else{html=`<div class="field"><label>Nome do hábito</label><input name="title" required maxlength="60" value="${mEsc(item?.title||'')}" placeholder="Ex.: Beber água"></div><div class="formgrid"><div class="field"><label>Frequência</label><select name="frequency"><option ${item?.frequency==='Diário'||!item?'selected':''}>Diário</option><option ${item?.frequency==='Dias úteis'?'selected':''}>Dias úteis</option><option ${item?.frequency==='Semanal'?'selected':''}>Semanal</option></select></div><div class="field"><label>Horário (opcional)</label><input name="time" type="time" value="${item?.time||''}"></div></div><div class="field"><label>Motivação (opcional)</label><textarea name="note">${mEsc(item?.note||'')}</textarea></div>`}m$('modFormFields').innerHTML=html;m$('modRecordForm').dataset.type=type;m$('modModalBack').classList.add('show')}
 window.openModuleModal=openModuleModal;window.closeModuleModal=()=>m$('modModalBack').classList.remove('show');
 m$('modRecordForm').addEventListener('submit',async e=>{e.preventDefault();const type=e.currentTarget.dataset.type;const f=Object.fromEntries(new FormData(e.currentTarget).entries());let arr=type==='transaction'?'transactions':type==='event'?'events':'habits';if(type==='transaction'){f.amount=Number(f.amount);if(!Number.isFinite(f.amount)||f.amount<=0){mToast('Informe um valor válido.');return}}const old=mEditing?mData[arr].find(x=>x.id===mEditing.id):null;const record={...old,...f,id:old?.id||mUid(),createdAt:old?.createdAt||Date.now()};if(type==='event')record.done=old?.done||false; if(type==='habit')record.active=true;if(old)mData[arr]=mData[arr].map(x=>x.id===old.id?record:x);else mData[arr].unshift(record);closeModuleModal();await mSave();mRenderAll();mToast('Registro salvo com sucesso.')});
