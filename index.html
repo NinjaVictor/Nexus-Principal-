@@ -5095,25 +5095,25 @@ function stParseRows(lines){
 }
 function stFindBalance(lines){
  for(let i=lines.length-1;i>=0;i--){
-  const line=String(lines[i]||'').replace(/\\s+/g,' ').trim();
-  if(!/saldo\\s+(?:final|atual|disponivel|disponível|em conta|total)/i.test(line)||/saldo anterior/i.test(line))continue;
-  const amounts=[...line.matchAll(/[-+]?\\s*(?:R\\$\\s*)?\\d{1,3}(?:\\.\\d{3})*,\\d{2}|[-+]?\\s*\\d+\\.\\d{2}/g)];
-  if(amounts.length){const raw=amounts[amounts.length-1][0];const value=stMoney(raw);if(Number.isFinite(value))return{balance:value,asOf:(line.match(/\\b\\d{1,2}[\\/. -]\\d{1,2}[\\/. -]\\d{2,4}\\b/)||[])[0]?stDate((line.match(/\\b\\d{1,2}[\\/. -]\\d{1,2}[\\/. -]\\d{2,4}\\b/)||[])[0]):mToday}}
+  const line=String(lines[i]||'').replace(/\s+/g,' ').trim();
+  if(!/saldo\s+(?:final|atual|disponivel|disponível|em conta|total)/i.test(line)||/saldo anterior/i.test(line))continue;
+  const amounts=[...line.matchAll(/[-+]?\s*(?:R\$\s*)?\d{1,3}(?:\.\d{3})*,\d{2}|[-+]?\s*\d+\.\d{2}/g)];
+  if(amounts.length){const raw=amounts[amounts.length-1][0];const value=stMoney(raw);if(Number.isFinite(value))return{balance:value,asOf:(line.match(/\b\d{1,2}[\/. -]\d{1,2}[\/. -]\d{2,4}\b/)||[])[0]?stDate((line.match(/\b\d{1,2}[\/. -]\d{1,2}[\/. -]\d{2,4}\b/)||[])[0]):mToday}}
  }
  return null;
 }
 async function stExtract(file){
  const name=file.name.toLowerCase();
  if(name.endsWith('.ofx')||name.endsWith('.qfx')){
-  const t=await file.text(),rows=[],blocks=t.match(/<STMTTRN>[\\s\\S]*?(?=<STMTTRN>|<\\/BANKTRANLIST>|$)/gi)||[];
-  for(const b of blocks){const date=(b.match(/<DTPOSTED>(\\d{4})(\\d{2})(\\d{2})/i)||[]);const amt=(b.match(/<TRNAMT>([-\\d.,]+)/i)||[])[1];const title=((b.match(/<(?:NAME|MEMO)>([^<\\r\\n]+)/i)||[])[1]||'Movimentação OFX').trim();if(date.length&&amt){const n=Number(amt.replace(',','.'));if(n)rows.push({date:date[1]+'-'+date[2]+'-'+date[3],title:title.slice(0,100),amount:Math.abs(n),kind:n<0?'expense':'income',category:'Outros'})}}
-  const ledger=t.match(/<LEDGERBAL>[\\s\\S]*?<BALAMT>([-\\d.,]+)[\\s\\S]*?<DTASOF>(\\d{4})(\\d{2})(\\d{2})/i);
-  const acct=(t.match(/<ACCTID>([^<\\r\\n]+)/i)||[])[1]||'';
+  const t=await file.text(),rows=[],blocks=t.match(/<STMTTRN>[\s\S]*?(?=<STMTTRN>|<\/BANKTRANLIST>|$)/gi)||[];
+  for(const b of blocks){const date=(b.match(/<DTPOSTED>(\d{4})(\d{2})(\d{2})/i)||[]);const amt=(b.match(/<TRNAMT>([-\d.,]+)/i)||[])[1];const title=((b.match(/<(?:NAME|MEMO)>([^<\r\n]+)/i)||[])[1]||'Movimentação OFX').trim();if(date.length&&amt){const n=Number(amt.replace(',','.'));if(n)rows.push({date:date[1]+'-'+date[2]+'-'+date[3],title:title.slice(0,100),amount:Math.abs(n),kind:n<0?'expense':'income',category:'Outros'})}}
+  const ledger=t.match(/<LEDGERBAL>[\s\S]*?<BALAMT>([-\d.,]+)[\s\S]*?<DTASOF>(\d{4})(\d{2})(\d{2})/i);
+  const acct=(t.match(/<ACCTID>([^<\r\n]+)/i)||[])[1]||'';
   return{rows,balance:ledger?{balance:Number(ledger[1].replace(',','.')),asOf:ledger[2]+'-'+ledger[3]+'-'+ledger[4]}:null,accountId:acct};
  }
  if(name.endsWith('.csv')||file.type==='text/csv'){
-  const t=await file.text(),lines=t.replace(/^\\uFEFF/,'').split(/\\r?\\n/),delimiter=(lines[0].match(/;/g)||[]).length>(lines[0].match(/,/g)||[]).length?';':',',rows=[];
-  for(const line of lines.slice(1)){const cols=line.split(delimiter).map(x=>x.replace(/^"|"$/g,'').trim());const di=cols.findIndex(x=>stDate(x));const ai=cols.findIndex(x=>Number.isFinite(stMoney(x))&&/[\\d]/.test(x));if(di<0||ai<0)continue;const raw=cols[ai],desc=cols.filter((x,i)=>i!==di&&i!==ai).join(' '),kind=stClassify(desc,raw),amount=Math.abs(stMoney(raw));if(kind&&amount)rows.push({date:stDate(cols[di]),title:desc.slice(0,100)||'Movimentação bancária',amount,kind,category:'Outros'})}
+  const t=await file.text(),lines=t.replace(/^\uFEFF/,'').split(/\r?\n/),delimiter=(lines[0].match(/;/g)||[]).length>(lines[0].match(/,/g)||[]).length?';':',',rows=[];
+  for(const line of lines.slice(1)){const cols=line.split(delimiter).map(x=>x.replace(/^"|"$/g,'').trim());const di=cols.findIndex(x=>stDate(x));const ai=cols.findIndex(x=>Number.isFinite(stMoney(x))&&/[\d]/.test(x));if(di<0||ai<0)continue;const raw=cols[ai],desc=cols.filter((x,i)=>i!==di&&i!==ai).join(' '),kind=stClassify(desc,raw),amount=Math.abs(stMoney(raw));if(kind&&amount)rows.push({date:stDate(cols[di]),title:desc.slice(0,100)||'Movimentação bancária',amount,kind,category:'Outros'})}
   return{rows,balance:stFindBalance(lines),accountId:''};
  }
  if(file.type==='application/pdf'||name.endsWith('.pdf')){
