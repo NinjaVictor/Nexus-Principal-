@@ -1144,6 +1144,19 @@ html,body{
   .dash-welcome{border-color:#51432e}
 }
 
+/* Navegação móvel completa */
+.mobile-menu-backdrop{display:none;position:fixed;z-index:90;inset:0;background:#000b;backdrop-filter:blur(8px);align-items:flex-end;padding:12px}
+.mobile-menu-backdrop.show{display:flex}
+.mobile-menu-panel{width:100%;max-height:min(78vh,720px);overflow:auto;background:#101216;border:1px solid #51432e;border-radius:20px;padding:16px;box-shadow:0 20px 70px #000b}
+.mobile-menu-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.mobile-menu-head strong{display:block;color:#f3efe7;font-size:15px}
+.mobile-menu-head small{display:block;color:#a59b8c;font-size:11px;margin-top:3px}
+.mobile-menu-head>button{width:34px;height:34px;border:1px solid #51432e;border-radius:10px;background:#1a1b20;color:#f3efe7;font-size:22px}
+.mobile-menu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.mobile-menu-grid button{min-width:0;min-height:68px;border:1px solid #39342b;border-radius:12px;background:#171a20;color:#d8c39f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-size:19px}
+.mobile-menu-grid button span{font-size:10px;color:#f3efe7;text-align:center;overflow-wrap:anywhere}
+@media(min-width:901px){.mobile-menu-backdrop{display:none!important}}
+@media(max-width:390px){.mobile-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 
@@ -1749,12 +1762,43 @@ html,body{
     Tarefas
   </button>
 
-  <button onclick="openView('notes')">
-    <span>▣</span>
-    Notas
+  <button onclick="toggleMobileMenu()" aria-label="Abrir todos os módulos">
+    <span>☷</span>
+    Mais
   </button>
 
 </nav>
+
+<div class="mobile-menu-backdrop" id="mobileMenuBackdrop" onclick="if(event.target===this)toggleMobileMenu(false)">
+  <section class="mobile-menu-panel" aria-label="Todos os módulos">
+    <div class="mobile-menu-head">
+      <div><strong>Todos os módulos</strong><small>Acesse qualquer área do NEXUS</small></div>
+      <button type="button" onclick="toggleMobileMenu(false)" aria-label="Fechar">×</button>
+    </div>
+    <div class="mobile-menu-grid">
+      <button onclick="mobileGo('ideas')">♧<span>Ideias</span></button>
+      <button onclick="mobileGo('notes')">▣<span>Notas</span></button>
+      <button onclick="mobileGo('goals')">◎<span>Objetivos</span></button>
+      <button onclick="mobileGo('archive')">▤<span>Arquivo</span></button>
+      <button onclick="mobileGo('searchView')">⌕<span>Busca</span></button>
+      <button onclick="mobileGo('favorites')">☆<span>Favoritos</span></button>
+      <button onclick="mobileGo('trash')">♜<span>Lixeira</span></button>
+      <button onclick="mobileGo('history')">◷<span>Histórico</span></button>
+      <button onclick="mobileGo('overview')">⌂<span>Painel pessoal</span></button>
+      <button onclick="mobileGo('finance')">◈<span>Financeiro</span></button>
+      <button onclick="mobileGo('agenda')">▦<span>Agenda</span></button>
+      <button onclick="mobileGo('habits')">✧<span>Hábitos</span></button>
+      <button onclick="mobileGo('news')">▤<span>Notícias</span></button>
+      <button onclick="mobileGo('assistant')">✧<span>NEXUS AI</span></button>
+      <button onclick="mobileGo('travel')">✈<span>Viagens</span></button>
+      <button onclick="mobileGo('assets')">◈<span>Patrimônio</span></button>
+      <button onclick="mobileGo('library')">▣<span>Biblioteca</span></button>
+      <button onclick="mobileGo('vault')">♙<span>Cofre pessoal</span></button>
+      <button onclick="mobileGo('automations')">ϟ<span>Automações</span></button>
+      <button onclick="mobileGo('settings')">⚙<span>Configurações</span></button>
+    </div>
+  </section>
+</div>
 
 
 <!-- =========================
@@ -5142,7 +5186,19 @@ const uBaseOpenView=window.openView;window.openView=function(view){uBaseOpenView
 if(u$('uNewsCats'))uRenderNewsCats();
 
 
-// Instalação progressiva: o shell abre mesmo quando a conexão oscila.
+// Menu móvel com acesso a todos os módulos.
+window.toggleMobileMenu=function(force){
+ const menu=document.getElementById('mobileMenuBackdrop');
+ if(!menu)return;
+ const open=typeof force==='boolean'?force:!menu.classList.contains('show');
+ menu.classList.toggle('show',open);
+ document.body.style.overflow=open?'hidden':'';
+};
+window.mobileGo=function(view){
+ window.toggleMobileMenu(false);
+ window.openView(view);
+};
+\n// Instalação progressiva: o shell abre mesmo quando a conexão oscila.
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").catch(err => console.warn("NEXUS offline shell:", err));
