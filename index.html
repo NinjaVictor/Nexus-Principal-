@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#030814">
+<meta name="theme-color" content="#08090c">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="./nexus-icon.svg">
 <meta name="description" content="NEXUS OS — seu centro de comando pessoal">
 <title>NEXUS OS — Ultimate Edition</title>
 
@@ -1062,6 +1064,86 @@ button{cursor:pointer}
 @media(max-width:900px){.u-grid{grid-template-columns:1fr 1fr}.u-metric-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.u-head{display:block}.u-head .u-btn{margin-top:12px}.u-grid,.u-news-grid{grid-template-columns:1fr}.u-form{grid-template-columns:1fr}.u-form .wide{grid-column:auto}.u-metric-grid{grid-template-columns:1fr 1fr}.u-chat{height:45vh}}
 
+
+/* NEXUS LUXURY SIGNATURE — acabamento preto ônix e champagne */
+:root{
+  --bg:#08090c;--panel:#111318e8;--panel2:#171a20;--line:#39342b;
+  --blue:#c5a36b;--purple:#9b8667;--green:#8eb79b;--orange:#d6a66e;
+  --red:#d77f82;--text:#f3efe7;--muted:#a59b8c;
+  --shadow:0 18px 55px #0009;
+}
+html,body{
+  background:radial-gradient(ellipse at 78% -8%,#9b78401c,transparent 36%),
+             radial-gradient(ellipse at 8% 85%,#5b4b3212,transparent 34%),var(--bg);
+}
+.sidebar{background:#090a0df5;border-right:1px solid #3a3327}
+.logo{border-color:#c5a36b;color:#e0c18b;box-shadow:0 0 24px #c5a36b30}
+.brand h1{color:#f4ead8}
+.nav button{color:#bcb4a8}
+.nav button:hover,.nav button.active{
+  color:#fff5e5;background:linear-gradient(90deg,#c5a36b22,#8c70401a);
+  border-color:#c5a36b55;box-shadow:inset 3px 0 #c5a36b;
+}
+.nav-label{color:#c5a36b}
+.divider{background:#393329}
+.ai{border-color:#80683f88;background:linear-gradient(145deg,#211c14aa,#101318aa)}
+.ai b,.ai h3{color:#e1c18a}
+.ai button,.outline{border-color:#a88a58;color:#ead8b7}
+.main{background:transparent}
+.hero:after{background:linear-gradient(135deg,transparent,#a4864a18,#08090caa)}
+.search{border-color:#80683f;background:#101216e8;box-shadow:0 0 28px #c5a36b12}
+.search:focus-within{border-color:#e0c18b;box-shadow:0 0 0 3px #c5a36b20}
+.top button{border-color:#51432e;background:#111318;color:#e5d5b8}
+.card,.dash-metric,.dash-panel,.dash-welcome{
+  border-color:#3a3429;
+  background:linear-gradient(145deg,#17191e,#0e1014);
+}
+.dash-welcome{
+  background:radial-gradient(ellipse at 82% 5%,#8b6a3528 0,transparent 44%),
+             linear-gradient(120deg,#191a1d,#0d0f12 72%);
+}
+.eyebrow,.dash-metric-top i,.dash-shortcut-grid b,.text-action{color:#d0ad72}
+.dash-welcome h2 span{background:linear-gradient(90deg,#f1d8a7,#b48a4e);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dash-shortcut-grid button{border-color:#3a3429;background:#14161a}
+.dash-shortcut-grid button:hover{border-color:#b28c54;background:#211d16}
+.dash-ring{background:conic-gradient(#c5a36b var(--pct),#29251e 0)}
+.dash-ring:before{background:#15171b}
+.dash-footer{color:#817663}
+.btn.primary,.view-title button,.plus{
+  color:#17130d;background:linear-gradient(135deg,#e0c18b,#9d7843);
+  border-color:#e0c18b;box-shadow:0 8px 24px #9d784322;
+}
+.btn.primary:hover,.view-title button:hover{filter:brightness(1.08)}
+.btn,.mini,.recordactions button,.check{border-color:#51432e;background:#17191d;color:#e6dcc9}
+.check.done{background:#203328;border-color:#8eb79b;color:#a8d5b2}
+.progress i,.progress span{background:linear-gradient(90deg,#9c7845,#e0c18b)}
+.entry,.record,.modal{border-color:#3a3429;background:#11151b}
+.field input,.field select,.field textarea,.filters input,.filters select{
+  border-color:#40382b;background:#0b0d11;color:#f3efe7;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#c5a36b;box-shadow:0 0 0 3px #c5a36b20}
+.firebase-status{border-color:#4d7158;background:#101a14;color:#a8d5b2}
+.firebase-status.error{border-color:#7d4548;background:#241316;color:#f0a0a2}
+.auth-screen{background:radial-gradient(circle at 70% 10%,#8b6a3530,transparent 35%),#08090cf7}
+.auth-card{border-color:#5b4930;background:linear-gradient(145deg,#191a1d,#0d0f12);box-shadow:0 28px 100px #000d}
+.auth-submit{background:linear-gradient(135deg,#e0c18b,#9d7843);color:#17130d;border-color:#e0c18b}
+.u-card,.u-news-card{border-color:#4a3d2a;background:linear-gradient(145deg,#191a1d,#0d0f12)}
+.u-btn{border-color:#d0b17b;background:linear-gradient(135deg,#e0c18b,#9d7843);color:#17130d}
+.u-btn.secondary,.u-pill{border-color:#4a3d2a;background:#15171b;color:#c9bdab}
+.u-pill.active{border-color:#c5a36b;background:#302719;color:#f0d7aa}
+.u-input,.u-select,.u-area{border-color:#40382b;background:#0b0d11}
+.u-input:focus,.u-select:focus,.u-area:focus{border-color:#c5a36b;box-shadow:0 0 0 3px #c5a36b20}
+.u-news-card a,.u-item a{color:#e0c18b}
+.u-msg.bot{background:#191a1d;border-color:#4a3d2a}
+.u-msg.user{background:#493b27;border-color:#a88958}
+.u-metric{border-color:#40382b;background:#14161a}
+.u-alert{border-color:#705c3c;background:#211c15;color:#e9d3a8}
+.toast{border-color:#80683f;background:#17191d}
+@media(max-width:650px){
+  .sidebar{background:#090a0dfc}
+  .dash-welcome{border-color:#51432e}
+}
+
 </style>
 </head>
 
@@ -1900,9 +1982,11 @@ function now(){
 
 function today(){
 
-  return new Date()
-    .toISOString()
-    .slice(0,10);
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 
 }
 
@@ -5010,6 +5094,14 @@ window.uImportBackup=async()=>{const file=u$('uImportFile').files[0];if(!file){t
 /* FINAL NAVIGATION ROUTER */
 const uBaseOpenView=window.openView;window.openView=function(view){uBaseOpenView(view);if(view==='news'){uRenderNewsCats();uLoadNews(false)}if(view==='assistant'){}if(['travel','assets','library','vault','automations','settings'].includes(view))uRenderAll();if(view==='automations')uRunReview()};
 if(u$('uNewsCats'))uRenderNewsCats();
+
+
+// Instalação progressiva: o shell abre mesmo quando a conexão oscila.
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(err => console.warn("NEXUS offline shell:", err));
+  });
+}
 
 </script>
 
