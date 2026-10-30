@@ -5066,8 +5066,8 @@ function stClassify(description,rawAmount){
  const a=String(rawAmount||'').toUpperCase();
  if(/\b(d|deb|debit|debito)\b/.test(a)||/compra|pagamento|boleto|saque|tarifa|pix enviado|transferencia enviada|debito|parcela/.test(d))return 'expense';
  if(/\b(c|cred|credito)\b/.test(a)||/salario|deposito|recebido|pix recebido|transferencia recebida|estorno|rendimento|credito|ted recebida|doc recebida/.test(d))return 'income';
- if(Number(rawAmount)<0)return 'expense';
- if(Number(rawAmount)>0&&/[+-]/.test(String(rawAmount)))return 'income';
+ if(String(rawAmount).trim().startsWith('-'))return 'expense';
+ if(String(rawAmount).trim().startsWith('+'))return 'income';
  return '';
 }
 function stParseRows(lines){
