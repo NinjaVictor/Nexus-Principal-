@@ -1627,12 +1627,13 @@ html,body{
  <section class="view mod-section" id="finance">
   <div class="section-head"><h3>Visão financeira</h3><button class="btn primary" onclick="openModuleModal('transaction')">＋ Nova movimentação</button></div>
   <div class="grid">
-   <div class="card"><div class="stat-label">SALDO DO MÊS</div><div class="stat-value blue" id="finBalance">R$ 0,00</div><div class="stat-foot">Resultado do mês selecionado</div></div>
+   <div class="card"><div class="stat-label">SALDO DO MÊS</div><div class="stat-value blue" id="finBalance">R$ 0,00</div><div class="stat-foot">Entradas menos saídas no período</div></div>
+   <div class="card"><div class="stat-label">SALDO BANCÁRIO</div><div class="stat-value" id="finBankBalance">—</div><div class="stat-foot" id="finBankBalanceDetail">Será identificado pelo extrato, quando disponível</div></div>
    <div class="card"><div class="stat-label">ENTRADAS</div><div class="stat-value positive" id="finIncome">R$ 0,00</div><div class="stat-foot">Receitas registradas</div></div>
    <div class="card"><div class="stat-label">DESPESAS</div><div class="stat-value negative" id="finExpense">R$ 0,00</div><div class="stat-foot">Gastos registrados</div></div>
   </div>
   <div class="card" style="margin-top:16px"><div class="section-head"><h3>Movimentações</h3><div class="filters"><input type="month" id="financeMonth" onchange="mRenderFinance()"><select id="financeType" onchange="mRenderFinance()"><option value="all">Todos os tipos</option><option value="income">Entradas</option><option value="expense">Despesas</option></select></div></div><div class="list" id="transactionList"></div></div>
-  <div class="card" style="margin-top:16px"><div class="section-head"><div><h3>Importar extrato automaticamente</h3><div class="stat-foot">Informe o banco e envie o arquivo. O NEXUS identifica as datas, valores e entradas/saídas.</div></div></div><form id="statementForm" class="formgrid"><div class="field"><label for="statementBank">Banco</label><input id="statementBank" maxlength="50" required placeholder="Ex.: Nubank, Itaú, Inter"></div><div class="field"><label for="statementFile">Extrato bancário</label><input id="statementFile" type="file" accept="application/pdf,.ofx,.qfx,.csv,text/csv,application/x-ofx" required></div><div class="field span2"><button class="btn primary" id="statementUpload" type="submit">＋ Ler e importar movimentações</button><div class="stat-foot" id="statementStatus" role="status">As movimentações identificadas serão salvas na sua conta e sincronizadas entre celular e computador. O arquivo original será processado no navegador e não ficará armazenado na nuvem.</div></div></form></div>
+  <div class="card" style="margin-top:16px"><div class="section-head"><div><h3>Importar extrato automaticamente</h3><div class="stat-foot">Informe o banco e envie o arquivo. O NEXUS identifica datas, entradas, saídas e, quando disponível, o saldo final da conta.</div></div></div><form id="statementForm" class="formgrid"><div class="field"><label for="statementBank">Banco</label><input id="statementBank" maxlength="50" required placeholder="Ex.: Nubank, Itaú, Inter"></div><div class="field"><label for="statementFile">Extrato bancário</label><input id="statementFile" type="file" accept="application/pdf,.ofx,.qfx,.csv,text/csv,application/x-ofx" required></div><div class="field span2"><button class="btn primary" id="statementUpload" type="submit">＋ Ler e importar movimentações</button><div class="stat-foot" id="statementStatus" role="status">As movimentações identificadas serão salvas na sua conta e sincronizadas entre celular e computador. O arquivo original será processado no navegador e não ficará armazenado na nuvem.</div></div></form></div>
  </section>
  <section class="view mod-section" id="agenda">
   <div class="section-head"><h3>Seus compromissos</h3><button class="btn primary" onclick="openModuleModal('event')">＋ Novo compromisso</button></div>
@@ -2183,7 +2184,8 @@ function cleanData(data){
     transactions:Array.isArray(data?.transactions)?data.transactions:[],
     events:Array.isArray(data?.events)?data.events:[],
     habits:Array.isArray(data?.habits)?data.habits:[],
-    completions:data?.completions&&typeof data.completions==='object'?data.completions:{}
+    completions:data?.completions&&typeof data.completions==='object'?data.completions:{},
+    bankBalances:Array.isArray(data?.bankBalances)?data.bankBalances:[]
 
   };
 
@@ -2392,6 +2394,7 @@ async function saveDatabase(){
         trash:nexus.trash,
         history:nexus.history,
         transactions:mData.transactions,
+        bankBalances:mData.bankBalances,
         events:mData.events,
         habits:mData.habits,
         completions:mData.completions,
@@ -5038,17 +5041,17 @@ renderAll();
 /* ===== MÓDULOS INTEGRADOS ===== */
 
 
-const mBlank=()=>({transactions:[],events:[],habits:[],completions:{}});let mData=mBlank(),mRef=null,mUnsub=null,mReady=false,mEditing=null;
+const mBlank=()=>({transactions:[],events:[],habits:[],completions:{},bankBalances:[]});let mData=mBlank(),mRef=null,mUnsub=null,mReady=false,mEditing=null;
 const m$=id=>document.getElementById(id);const mLocalDate=(d=new Date())=>{const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`};const mUid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);const mEsc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const mMoney=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});const mFmtDate=s=>s?new Date(s+'T12:00:00').toLocaleDateString('pt-BR'):'Sem data';const mToday=mLocalDate();
 function mToast(s){toast(s)}function mStatus(s,bad=false){m$('firebaseStatus').textContent='● '+s;m$('firebaseStatus').style.color=bad?'var(--red)':'var(--green)'}
-async function mSave(){if(!mReady||!mRef){mToast('Aguarde a conexão do NEXUS antes de importar.');return}try{await setDoc(mRef,{transactions:mData.transactions,events:mData.events,habits:mData.habits,completions:mData.completions,updatedAt:serverTimestamp()},{merge:true});mStatus('NEXUS sincronizado')}catch(e){console.error(e);mStatus('Erro ao salvar',true);mToast('Não foi possível sincronizar o Financeiro. Verifique as regras do Firestore.');throw e}}
-function mSetData(raw){mData={transactions:Array.isArray(raw.transactions)?raw.transactions:[],events:Array.isArray(raw.events)?raw.events:[],habits:Array.isArray(raw.habits)?raw.habits:[],completions:raw.completions&&typeof raw.completions==='object'?raw.completions:{}};mRenderAll()}
+async function mSave(){if(!mReady||!mRef){mToast('Aguarde a conexão do NEXUS antes de importar.');return}try{await setDoc(mRef,{transactions:mData.transactions,bankBalances:mData.bankBalances,events:mData.events,habits:mData.habits,completions:mData.completions,updatedAt:serverTimestamp()},{merge:true});mStatus('NEXUS sincronizado')}catch(e){console.error(e);mStatus('Erro ao salvar',true);mToast('Não foi possível sincronizar o Financeiro. Verifique as regras do Firestore.');throw e}}
+function mSetData(raw){mData={transactions:Array.isArray(raw.transactions)?raw.transactions:[],events:Array.isArray(raw.events)?raw.events:[],habits:Array.isArray(raw.habits)?raw.habits:[],completions:raw.completions&&typeof raw.completions==='object'?raw.completions:{},bankBalances:Array.isArray(raw.bankBalances)?raw.bankBalances:[]};mRenderAll()}
 function openModuleModal(type,item=null){mEditing=item?{type,id:item.id}:null;m$('modModalTitle').textContent=(item?'Editar ':'Novo ')+({transaction:'movimentação',event:'compromisso',habit:'hábito'}[type]);let html='';if(type==='transaction'){html=`<div class="formgrid"><div class="field"><label>Descrição</label><input name="title" required maxlength="70" value="${mEsc(item?.title||'')}" placeholder="Ex.: Mercado"></div><div class="field"><label>Valor (R$)</label><input name="amount" type="number" min="0.01" step="0.01" required value="${item?.amount??''}" placeholder="0,00"></div><div class="field"><label>Tipo</label><select name="kind"><option value="expense" ${item?.kind!=='income'?'selected':''}>Despesa</option><option value="income" ${item?.kind==='income'?'selected':''}>Entrada</option></select></div><div class="field"><label>Categoria</label><select name="category">${['Moradia','Alimentação','Transporte','Lazer','Saúde','Educação','Salário','Investimentos','Outros'].map(x=>`<option ${item?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field span2"><label>Data</label><input name="date" type="date" required value="${item?.date||mToday}"></div><div class="field span2"><label>Observação (opcional)</label><textarea name="note">${mEsc(item?.note||'')}</textarea></div></div>`}else if(type==='event'){html=`<div class="field"><label>Título</label><input name="title" required maxlength="80" value="${mEsc(item?.title||'')}" placeholder="Ex.: Reunião"></div><div class="formgrid"><div class="field"><label>Data</label><input name="date" type="date" required value="${item?.date||mToday}"></div><div class="field"><label>Horário</label><input name="time" type="time" value="${item?.time||'09:00'}"></div><div class="field"><label>Categoria</label><select name="category">${['Pessoal','Trabalho','Estudos','Saúde','Lazer','Outro'].map(x=>`<option ${item?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>Local (opcional)</label><input name="place" value="${mEsc(item?.place||'')}" placeholder="Onde será?"></div></div><div class="field"><label>Detalhes</label><textarea name="note">${mEsc(item?.note||'')}</textarea></div>`}else{html=`<div class="field"><label>Nome do hábito</label><input name="title" required maxlength="60" value="${mEsc(item?.title||'')}" placeholder="Ex.: Beber água"></div><div class="formgrid"><div class="field"><label>Frequência</label><select name="frequency"><option ${item?.frequency==='Diário'||!item?'selected':''}>Diário</option><option ${item?.frequency==='Dias úteis'?'selected':''}>Dias úteis</option><option ${item?.frequency==='Semanal'?'selected':''}>Semanal</option></select></div><div class="field"><label>Horário (opcional)</label><input name="time" type="time" value="${item?.time||''}"></div></div><div class="field"><label>Motivação (opcional)</label><textarea name="note">${mEsc(item?.note||'')}</textarea></div>`}m$('modFormFields').innerHTML=html;m$('modRecordForm').dataset.type=type;m$('modModalBack').classList.add('show')}
 window.openModuleModal=openModuleModal;window.closeModuleModal=()=>m$('modModalBack').classList.remove('show');
 m$('modRecordForm').addEventListener('submit',async e=>{e.preventDefault();const type=e.currentTarget.dataset.type;const f=Object.fromEntries(new FormData(e.currentTarget).entries());let arr=type==='transaction'?'transactions':type==='event'?'events':'habits';if(type==='transaction'){f.amount=Number(f.amount);if(!Number.isFinite(f.amount)||f.amount<=0){mToast('Informe um valor válido.');return}}const old=mEditing?mData[arr].find(x=>x.id===mEditing.id):null;const record={...old,...f,id:old?.id||mUid(),createdAt:old?.createdAt||Date.now()};if(type==='event')record.done=old?.done||false; if(type==='habit')record.active=true;if(old)mData[arr]=mData[arr].map(x=>x.id===old.id?record:x);else mData[arr].unshift(record);closeModuleModal();await mSave();mRenderAll();mToast('Registro salvo com sucesso.')});
 window.editModuleRecord=(type,id)=>{const arr=type==='transaction'?mData.transactions:type==='event'?mData.events:mData.habits;const item=arr.find(x=>x.id===id);if(item)openModuleModal(type,item)};window.deleteModuleRecord=async(type,id)=>{if(!confirm('Deseja excluir este registro?'))return;const arr=type==='transaction'?'transactions':type==='event'?'events':'habits';mData[arr]=mData[arr].filter(x=>x.id!==id);if(type==='habit')Object.keys(mData.completions).forEach(d=>{delete mData.completions[d][id]});await mSave();mRenderAll();mToast('Registro excluído.')};
 function mMonthTotals(){const m=m$('financeMonth')?.value||mToday.slice(0,7);const list=mData.transactions.filter(x=>(x.date||'').startsWith(m));const income=list.filter(x=>x.kind==='income').reduce((s,x)=>s+x.amount,0),expense=list.filter(x=>x.kind==='expense').reduce((s,x)=>s+x.amount,0);return{income,expense,balance:income-expense,list}}
-function mRenderFinance(){const t=mMonthTotals();m$('finBalance').textContent=mMoney(t.balance);m$('finBalance').className='stat-value '+(t.balance>=0?'blue':'negative');m$('finIncome').textContent=mMoney(t.income);m$('finExpense').textContent=mMoney(t.expense);const kind=m$('financeType').value;const list=t.list.filter(x=>kind==='all'||x.kind===kind).sort((a,b)=>(b.date||'').localeCompare(a.date||''));m$('transactionList').innerHTML=list.length?list.map(x=>`<div class="entry"><div class="entry-main"><div class="entry-title">${mEsc(x.title)}</div><div class="entry-sub">${mEsc(x.category)} · ${mFmtDate(x.date)}${x.note?' · '+mEsc(x.note):''}</div></div><div class="entry-right"><div class="entry-amount ${x.kind==='income'?'positive':'negative'}">${x.kind==='income'?'+':'−'} ${mMoney(x.amount)}</div><div class="actions"><button class="mini" onclick="editModuleRecord('transaction','${x.id}')">Editar</button><button class="mini" onclick="deleteModuleRecord('transaction','${x.id}')">Excluir</button></div></div></div>`).join(''):'<div class="empty">Nenhuma movimentação neste período.</div>'}
+function mRenderFinance(){const t=mMonthTotals();m$('finBalance').textContent=mMoney(t.balance);m$('finBalance').className='stat-value '+(t.balance>=0?'blue':'negative');m$('finIncome').textContent=mMoney(t.income);m$('finExpense').textContent=mMoney(t.expense);const accounts=mData.bankBalances||[];const total=accounts.reduce((s,x)=>s+Number(x.balance||0),0);m$('finBankBalance').textContent=accounts.length?mMoney(total):'—';m$('finBankBalance').className='stat-value '+(total>=0?'blue':'negative');m$('finBankBalanceDetail').textContent=accounts.length?accounts.map(x=>mEsc(x.bank)+' · '+mMoney(x.balance)+' · '+mFmtDate(x.asOf)).join(' | '):'Importe um extrato com saldo final para identificar o valor';const kind=m$('financeType').value;const list=t.list.filter(x=>kind==='all'||x.kind===kind).sort((a,b)=>(b.date||'').localeCompare(a.date||''));m$('transactionList').innerHTML=list.length?list.map(x=>`<div class="entry"><div class="entry-main"><div class="entry-title">${mEsc(x.title)}</div><div class="entry-sub">${mEsc(x.category)} · ${mFmtDate(x.date)}${x.note?' · '+mEsc(x.note):''}</div></div><div class="entry-right"><div class="entry-amount ${x.kind==='income'?'positive':'negative'}">${x.kind==='income'?'+':'−'} ${mMoney(x.amount)}</div><div class="actions"><button class="mini" onclick="editModuleRecord('transaction','${x.id}')">Editar</button><button class="mini" onclick="deleteModuleRecord('transaction','${x.id}')">Excluir</button></div></div></div>`).join(''):'<div class="empty">Nenhuma movimentação neste período.</div>'}
 window.mRenderFinance=mRenderFinance;
 
 const st$=id=>document.getElementById(id);
@@ -5090,17 +5093,28 @@ function stParseRows(lines){
  }
  return out;
 }
+function stFindBalance(lines){
+ for(let i=lines.length-1;i>=0;i--){
+  const line=String(lines[i]||'').replace(/\\s+/g,' ').trim();
+  if(!/saldo\\s+(?:final|atual|disponivel|disponível|em conta|total)/i.test(line)||/saldo anterior/i.test(line))continue;
+  const amounts=[...line.matchAll(/[-+]?\\s*(?:R\\$\\s*)?\\d{1,3}(?:\\.\\d{3})*,\\d{2}|[-+]?\\s*\\d+\\.\\d{2}/g)];
+  if(amounts.length){const raw=amounts[amounts.length-1][0];const value=stMoney(raw);if(Number.isFinite(value))return{balance:value,asOf:(line.match(/\\b\\d{1,2}[\\/. -]\\d{1,2}[\\/. -]\\d{2,4}\\b/)||[])[0]?stDate((line.match(/\\b\\d{1,2}[\\/. -]\\d{1,2}[\\/. -]\\d{2,4}\\b/)||[])[0]):mToday}}
+ }
+ return null;
+}
 async function stExtract(file){
  const name=file.name.toLowerCase();
  if(name.endsWith('.ofx')||name.endsWith('.qfx')){
-  const t=await file.text(),rows=[];const blocks=t.match(/<STMTTRN>[\s\S]*?(?=<STMTTRN>|<\/BANKTRANLIST>|$)/gi)||[];
-  for(const b of blocks){const date=(b.match(/<DTPOSTED>(\d{4})(\d{2})(\d{2})/i)||[]);const amt=(b.match(/<TRNAMT>([-\d.,]+)/i)||[])[1];const title=((b.match(/<(?:NAME|MEMO)>([^<\r\n]+)/i)||[])[1]||'Movimentação OFX').trim();if(date.length&&amt){const n=Number(amt.replace(',','.'));if(n)rows.push({date:date[1]+'-'+date[2]+'-'+date[3],title:title.slice(0,100),amount:Math.abs(n),kind:n<0?'expense':'income',category:'Outros'})}}
-  return rows;
+  const t=await file.text(),rows=[],blocks=t.match(/<STMTTRN>[\\s\\S]*?(?=<STMTTRN>|<\\/BANKTRANLIST>|$)/gi)||[];
+  for(const b of blocks){const date=(b.match(/<DTPOSTED>(\\d{4})(\\d{2})(\\d{2})/i)||[]);const amt=(b.match(/<TRNAMT>([-\\d.,]+)/i)||[])[1];const title=((b.match(/<(?:NAME|MEMO)>([^<\\r\\n]+)/i)||[])[1]||'Movimentação OFX').trim();if(date.length&&amt){const n=Number(amt.replace(',','.'));if(n)rows.push({date:date[1]+'-'+date[2]+'-'+date[3],title:title.slice(0,100),amount:Math.abs(n),kind:n<0?'expense':'income',category:'Outros'})}}
+  const ledger=t.match(/<LEDGERBAL>[\\s\\S]*?<BALAMT>([-\\d.,]+)[\\s\\S]*?<DTASOF>(\\d{4})(\\d{2})(\\d{2})/i);
+  const acct=(t.match(/<ACCTID>([^<\\r\\n]+)/i)||[])[1]||'';
+  return{rows,balance:ledger?{balance:Number(ledger[1].replace(',','.')),asOf:ledger[2]+'-'+ledger[3]+'-'+ledger[4]}:null,accountId:acct};
  }
  if(name.endsWith('.csv')||file.type==='text/csv'){
-  const t=await file.text(),lines=t.replace(/^\uFEFF/,'').split(/\r?\n/),delimiter=(lines[0].match(/;/g)||[]).length>(lines[0].match(/,/g)||[]).length?';':',',rows=[];
-  for(const line of lines.slice(1)){const cols=line.split(delimiter).map(x=>x.replace(/^"|"$/g,'').trim());const di=cols.findIndex(x=>stDate(x));const ai=cols.findIndex(x=>Number.isFinite(stMoney(x))&&/[\d]/.test(x));if(di<0||ai<0)continue;const raw=cols[ai],desc=cols.filter((x,i)=>i!==di&&i!==ai).join(' '),kind=stClassify(desc,raw),amount=Math.abs(stMoney(raw));if(kind&&amount)rows.push({date:stDate(cols[di]),title:desc.slice(0,100)||'Movimentação bancária',amount,kind,category:'Outros'})}
-  return rows;
+  const t=await file.text(),lines=t.replace(/^\\uFEFF/,'').split(/\\r?\\n/),delimiter=(lines[0].match(/;/g)||[]).length>(lines[0].match(/,/g)||[]).length?';':',',rows=[];
+  for(const line of lines.slice(1)){const cols=line.split(delimiter).map(x=>x.replace(/^"|"$/g,'').trim());const di=cols.findIndex(x=>stDate(x));const ai=cols.findIndex(x=>Number.isFinite(stMoney(x))&&/[\\d]/.test(x));if(di<0||ai<0)continue;const raw=cols[ai],desc=cols.filter((x,i)=>i!==di&&i!==ai).join(' '),kind=stClassify(desc,raw),amount=Math.abs(stMoney(raw));if(kind&&amount)rows.push({date:stDate(cols[di]),title:desc.slice(0,100)||'Movimentação bancária',amount,kind,category:'Outros'})}
+  return{rows,balance:stFindBalance(lines),accountId:''};
  }
  if(file.type==='application/pdf'||name.endsWith('.pdf')){
   stMessage('Lendo o PDF e identificando as movimentações...');
@@ -5109,7 +5123,7 @@ async function stExtract(file){
   const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise,lines=[];
   for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p),content=await page.getTextContent(),groups=new Map();for(const item of content.items){if(!item.str?.trim())continue;const y=Math.round(item.transform[5]/2)*2;if(!groups.has(y))groups.set(y,[]);groups.get(y).push({x:item.transform[4],s:item.str})}for(const y of [...groups.keys()].sort((a,b)=>b-a)){lines.push(groups.get(y).sort((a,b)=>a.x-b.x).map(x=>x.s).join(' '))}}
   if(!lines.join(' ').trim())throw new Error('PDF sem texto selecionável. Este arquivo parece ser digitalizado como imagem; não foi possível ler sem OCR.');
-  return stParseRows(lines);
+  return{rows:stParseRows(lines),balance:stFindBalance(lines),accountId:''};
  }
  throw new Error('Formato não suportado. Envie PDF, OFX, QFX ou CSV.');
 }
@@ -5119,12 +5133,20 @@ st$('statementForm').addEventListener('submit',async e=>{
  if(!file||!bank)return;if(file.size>20*1024*1024){stMessage('O arquivo ultrapassa 20 MB.',true);return}
  button.disabled=true;button.textContent='Analisando...';
  try{
-  const rows=await stExtract(file);if(!rows.length)throw new Error('Não encontrei movimentações reconhecíveis. Confira se o extrato contém texto e tente exportar em OFX ou CSV pelo banco.');
+  const extracted=await stExtract(file),rows=extracted.rows||[];if(!rows.length&&!extracted.balance)throw new Error('Não encontrei movimentações nem saldo reconhecível. Confira se o extrato contém texto e tente exportar em OFX ou CSV pelo banco.');
   const existing=new Set(mData.transactions.map(x=>x.sourceKey).filter(Boolean));let added=0,duplicates=0;
-  for(const row of rows){const sourceKey=[bank.toLowerCase(),row.date,row.kind,row.amount.toFixed(2),row.title.toLowerCase()].join('|');if(existing.has(sourceKey)){duplicates++;continue}existing.add(sourceKey);mData.transactions.push({id:uid(),title:row.title,amount:row.amount,kind:row.kind,category:row.category,date:row.date,note:'Importado do extrato · '+bank,bank,sourceKey}) ;added++}
-  if(added){await mSave();mRenderFinance()}
-  stMessage(added+' movimentação(ões) importada(s) de '+rows.length+' identificada(s). '+duplicates+' duplicada(s) ignorada(s). Confira os lançamentos no Financeiro.');
-  st$('statementFile').value='';mToast(added+' movimentação(ões) adicionadas ao Financeiro.');
+  for(const row of rows){const sourceKey=[bank.toLowerCase(),row.date,row.kind,row.amount.toFixed(2),row.title.toLowerCase()].join('|');if(existing.has(sourceKey)){duplicates++;continue}existing.add(sourceKey);mData.transactions.push({id:uid(),title:row.title,amount:row.amount,kind:row.kind,category:row.category,date:row.date,note:'Importado do extrato · '+bank,bank,sourceKey});added++}
+  let balanceUpdated=false;
+  if(extracted.balance&&Number.isFinite(Number(extracted.balance.balance))){
+   const accountId=String(extracted.accountId||'').trim(),key=bank.toLowerCase()+'|'+accountId;
+   const record={bank,balance:Number(extracted.balance.balance),asOf:extracted.balance.asOf||mToday,accountId,key,updatedAt:new Date().toISOString()};
+   const idx=(mData.bankBalances||[]).findIndex(x=>x.key===key);
+   if(idx>=0)mData.bankBalances[idx]=record;else mData.bankBalances.push(record);
+   balanceUpdated=true;
+  }
+  if(added||balanceUpdated){await mSave();mRenderFinance()}
+  stMessage(added+' movimentação(ões) importada(s) de '+rows.length+' identificada(s). '+duplicates+' duplicada(s) ignorada(s). '+(balanceUpdated?'Saldo bancário atualizado.':'O extrato não apresentou saldo final identificável; saldo bancário mantido.' ));
+  st$('statementFile').value='';mToast(added+' movimentação(ões) adicionadas. '+(balanceUpdated?'Saldo bancário atualizado.':''));
  }catch(err){console.error('Leitura de extrato:',err);stMessage(err.message||'Não foi possível ler o extrato.',true)}
  finally{button.disabled=false;button.textContent='＋ Ler e importar movimentações'}
 });
