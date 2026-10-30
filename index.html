@@ -1157,6 +1157,214 @@ html,body{
 .mobile-menu-grid button span{font-size:10px;color:#f3efe7;text-align:center;overflow-wrap:anywhere}
 @media(min-width:901px){.mobile-menu-backdrop{display:none!important}}
 @media(max-width:390px){.mobile-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* =========================================================
+   NEXUS OS — DESIGN SYSTEM REFINEMENT
+   Visual layer only: preserves existing markup and behavior.
+========================================================= */
+:root{
+  color-scheme:dark;
+  --bg:#090a0c;
+  --surface:#111317;
+  --surface-raised:#171a1f;
+  --surface-soft:#1c2026;
+  --line:rgba(210,190,155,.14);
+  --line-strong:rgba(210,190,155,.26);
+  --accent:#c5a36b;
+  --accent-strong:#e2c58f;
+  --accent-soft:rgba(197,163,107,.12);
+  --text:#f2f0eb;
+  --muted:#a19b90;
+  --muted-2:#77746d;
+  --shadow-soft:0 8px 24px rgba(0,0,0,.18);
+  --shadow-card:0 16px 42px rgba(0,0,0,.24);
+  --shadow-float:0 24px 70px rgba(0,0,0,.42);
+  --radius-sm:9px;
+  --radius-md:14px;
+  --radius-lg:20px;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+html{scroll-behavior:smooth;scrollbar-color:#514735 #0b0c0e}
+body{
+  color:var(--text);
+  letter-spacing:.005em;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+::selection{background:rgba(197,163,107,.28);color:#fff}
+:focus-visible{outline:2px solid var(--accent-strong)!important;outline-offset:3px}
+button,a,input,select,textarea{ -webkit-tap-highlight-color:transparent }
+button{transition:background .18s var(--ease),border-color .18s var(--ease),color .18s var(--ease),box-shadow .18s var(--ease),transform .18s var(--ease)}
+button:active{transform:translateY(1px)}
+a{color:var(--accent-strong);text-underline-offset:3px}
+hr{border:0;border-top:1px solid var(--line)}
+/* Shell and navigation */
+.sidebar{
+  background:rgba(12,13,16,.94);
+  border-right:1px solid var(--line);
+  box-shadow:8px 0 32px rgba(0,0,0,.12);
+  backdrop-filter:blur(24px) saturate(125%);
+}
+.brand{padding-bottom:27px}
+.logo{
+  border-color:var(--accent);
+  color:var(--accent-strong);
+  border-radius:13px;
+  box-shadow:0 0 26px rgba(197,163,107,.13),inset 0 0 14px rgba(197,163,107,.06);
+}
+.brand h1{font-weight:750;letter-spacing:.24em}
+.brand small{color:#a89a80;letter-spacing:.16em}
+.nav{gap:4px}
+.nav button{
+  min-height:42px;
+  border-radius:11px;
+  color:#b9b4aa;
+  font-size:13px;
+  font-weight:520;
+  transition:all .18s var(--ease);
+}
+.nav button:hover{background:rgba(255,255,255,.045);border-color:var(--line);color:#f5f0e6;box-shadow:none}
+.nav button.active{
+  background:linear-gradient(100deg,rgba(197,163,107,.15),rgba(197,163,107,.035));
+  border-color:rgba(197,163,107,.22);
+  color:#f3dfbd;
+  box-shadow:inset 2px 0 var(--accent),0 5px 16px rgba(0,0,0,.12);
+}
+.ico{opacity:.9}
+.main{min-width:0}
+.top{
+  border-bottom:1px solid rgba(210,190,155,.1);
+  backdrop-filter:blur(18px);
+}
+.top button,.mobile-menu-head>button{
+  border-radius:10px;
+  transition:all .18s var(--ease);
+}
+.top button:hover,.mobile-menu-head>button:hover{border-color:var(--accent);background:var(--accent-soft)}
+/* Typography and page hierarchy */
+h1,h2,h3,h4{color:#f4f0e8;letter-spacing:-.025em}
+h1{font-weight:760}
+h2{font-weight:700}
+h3{font-weight:650}
+p{line-height:1.65}
+small,.muted,.subtle{color:var(--muted)}
+.eyebrow,.nav-label{
+  color:var(--accent);
+  font-size:10px;
+  font-weight:750;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+/* Cards, panels and content surfaces */
+.card,.dash-metric,.dash-panel,.dash-welcome,.u-card,.u-news-card,.entry,.record,.modal{
+  border:1px solid var(--line);
+  border-radius:var(--radius-md);
+  box-shadow:var(--shadow-soft);
+  background:linear-gradient(155deg,rgba(26,28,32,.98),rgba(15,17,20,.98));
+}
+.card,.dash-metric,.dash-panel,.u-card,.u-news-card{transition:border-color .2s var(--ease),box-shadow .2s var(--ease),transform .2s var(--ease)}
+.card:hover,.dash-metric:hover,.dash-panel:hover,.u-card:hover,.u-news-card:hover{
+  border-color:var(--line-strong);
+  box-shadow:var(--shadow-card);
+}
+.dash-welcome{
+  border-color:rgba(197,163,107,.25);
+  background:radial-gradient(ellipse at 84% 0,rgba(197,163,107,.13),transparent 43%),linear-gradient(125deg,#1c1d20,#101114 72%);
+  box-shadow:var(--shadow-card);
+}
+.dash-metric{background:linear-gradient(145deg,#1b1d21,#111317)}
+.dash-panel{background:linear-gradient(145deg,#191b1f,#111317)}
+.dash-ring{box-shadow:0 0 0 5px rgba(197,163,107,.055)}
+/* Actions */
+.btn,.mini,.recordactions button,.check,.u-btn,.u-pill,.outline,.plus,.view-title button,.btn.primary{
+  border-radius:10px;
+  font-weight:650;
+  letter-spacing:.005em;
+}
+.btn.primary,.view-title button,.plus,.u-btn{
+  background:linear-gradient(135deg,#e1c58f,#b28b51);
+  color:#17130d;
+  border:1px solid #e7cc9a;
+  box-shadow:0 7px 20px rgba(166,127,68,.17),inset 0 1px rgba(255,255,255,.25);
+}
+.btn.primary:hover,.view-title button:hover,.plus:hover,.u-btn:hover{
+  filter:brightness(1.07);
+  box-shadow:0 10px 26px rgba(166,127,68,.24);
+  transform:translateY(-1px);
+}
+.btn:not(.primary):hover,.mini:hover,.recordactions button:hover,.outline:hover,.u-btn.secondary:hover{
+  border-color:rgba(197,163,107,.5);
+  background:rgba(197,163,107,.09);
+  color:#f4dfba;
+}
+/* Form controls */
+input,select,textarea{accent-color:var(--accent)}
+.field input,.field select,.field textarea,.filters input,.filters select,.u-input,.u-select,.u-area,.search{
+  min-height:42px;
+  border:1px solid rgba(210,190,155,.19);
+  border-radius:10px;
+  background:#0d0f12;
+  color:var(--text);
+  transition:border-color .18s var(--ease),box-shadow .18s var(--ease),background .18s var(--ease);
+}
+.field textarea,.u-area{min-height:100px;line-height:1.55}
+.field input:hover,.field select:hover,.field textarea:hover,.filters input:hover,.filters select:hover,.u-input:hover,.u-select:hover,.u-area:hover{border-color:rgba(197,163,107,.38)}
+.field input:focus,.field select:focus,.field textarea:focus,.filters input:focus,.filters select:focus,.u-input:focus,.u-select:focus,.u-area:focus,.search:focus-within{
+  outline:none;
+  border-color:var(--accent);
+  background:#111216;
+  box-shadow:0 0 0 3px rgba(197,163,107,.12);
+}
+input::placeholder,textarea::placeholder{color:#77736b;opacity:1}
+label{color:#d4cfc4;font-weight:560}
+.field{gap:7px}
+/* Lists, data and status */
+.entry,.record{box-shadow:none;border-radius:12px}
+.progress{overflow:hidden;border-radius:999px;background:#28251f}
+.progress i,.progress span{border-radius:999px}
+.check{transition:all .18s var(--ease)}
+.firebase-status,.u-alert,.toast{border-radius:12px;box-shadow:var(--shadow-soft)}
+.u-pill{font-size:11px;font-weight:650;transition:all .18s var(--ease)}
+.u-pill.active{box-shadow:inset 0 0 0 1px rgba(197,163,107,.12)}
+/* Dialogs, overlays and mobile menu */
+.modal{box-shadow:var(--shadow-float);backdrop-filter:blur(18px)}
+.mobile-menu-backdrop{backdrop-filter:blur(10px);background:rgba(0,0,0,.68)}
+.mobile-menu-panel{
+  background:linear-gradient(160deg,#1a1c20,#101216);
+  border-color:var(--line-strong);
+  border-radius:22px 22px 16px 16px;
+  box-shadow:var(--shadow-float);
+}
+.mobile-menu-grid button{
+  border-color:var(--line);
+  border-radius:13px;
+  background:linear-gradient(145deg,#1b1e23,#121418);
+  color:var(--accent-strong);
+  transition:all .18s var(--ease);
+}
+.mobile-menu-grid button:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px)}
+/* Scrollbars */
+*{scrollbar-width:thin;scrollbar-color:#514735 transparent}
+*::-webkit-scrollbar{width:9px;height:9px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{background:#514735;border:2px solid transparent;border-radius:99px;background-clip:padding-box}
+*::-webkit-scrollbar-thumb:hover{background:#806b48;border:2px solid transparent;background-clip:padding-box}
+/* Responsive refinements */
+@media(max-width:900px){
+  .sidebar{box-shadow:0 12px 35px rgba(0,0,0,.24)}
+  .main{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+}
+@media(max-width:650px){
+  .dash-welcome{border-radius:17px}
+  .card,.dash-metric,.dash-panel,.u-card,.u-news-card{border-radius:13px}
+  .mobile-menu-panel{padding:17px}
+  button{min-height:36px}
+  input,select,textarea{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
 </style>
 </head>
 
