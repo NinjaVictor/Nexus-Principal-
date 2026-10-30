@@ -1632,7 +1632,7 @@ html,body{
    <div class="card"><div class="stat-label">DESPESAS</div><div class="stat-value negative" id="finExpense">R$ 0,00</div><div class="stat-foot">Gastos registrados</div></div>
   </div>
   <div class="card" style="margin-top:16px"><div class="section-head"><h3>Movimentações</h3><div class="filters"><input type="month" id="financeMonth" onchange="mRenderFinance()"><select id="financeType" onchange="mRenderFinance()"><option value="all">Todos os tipos</option><option value="income">Entradas</option><option value="expense">Despesas</option></select></div></div><div class="list" id="transactionList"></div></div>
-  <div class="card" style="margin-top:16px"><div class="section-head"><div><h3>Meus extratos</h3><div class="stat-foot">Arquivos privados sincronizados com sua conta NEXUS</div></div><button class="btn" type="button" onclick="stLoad()">↻ Atualizar</button></div><form id="statementForm" class="formgrid"><div class="field"><label for="statementBank">Banco</label><input id="statementBank" maxlength="50" required placeholder="Ex.: Nubank, Itaú, Inter"></div><div class="field"><label for="statementMonth">Mês do extrato</label><input id="statementMonth" type="month" required></div><div class="field span2"><label for="statementFile">Arquivo (PDF ou imagem, até 15 MB)</label><input id="statementFile" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" required></div><div class="field span2"><button class="btn primary" id="statementUpload" type="submit">＋ Enviar extrato para a nuvem</button><div class="stat-foot" id="statementStatus" role="status">Entre na sua conta para acessar seus extratos em qualquer dispositivo.</div></div></form><div class="filters"><input id="statementFilterMonth" type="month" aria-label="Filtrar por mês" onchange="stRender()"><input id="statementFilterBank" placeholder="Filtrar por banco" oninput="stRender()"></div><div class="list" id="statementList"><div class="empty">Seus extratos aparecerão aqui.</div></div></div>
+  <div class="card" style="margin-top:16px"><div class="section-head"><div><h3>Importar extrato automaticamente</h3><div class="stat-foot">Informe o banco e envie o arquivo. O NEXUS identifica as datas, valores e entradas/saídas.</div></div></div><form id="statementForm" class="formgrid"><div class="field"><label for="statementBank">Banco</label><input id="statementBank" maxlength="50" required placeholder="Ex.: Nubank, Itaú, Inter"></div><div class="field"><label for="statementFile">Extrato bancário</label><input id="statementFile" type="file" accept="application/pdf,.ofx,.qfx,.csv,text/csv,application/x-ofx" required></div><div class="field span2"><button class="btn primary" id="statementUpload" type="submit">＋ Ler e importar movimentações</button><div class="stat-foot" id="statementStatus" role="status">As movimentações identificadas serão salvas na sua conta e sincronizadas entre celular e computador. O arquivo original será processado no navegador e não ficará armazenado na nuvem.</div></div></form></div>
  </section>
  <section class="view mod-section" id="agenda">
   <div class="section-head"><h3>Seus compromissos</h3><button class="btn primary" onclick="openModuleModal('event')">＋ Novo compromisso</button></div>
@@ -5034,7 +5034,6 @@ async function startModulesDatabase(user){
     const snap=await getDoc(mRef);
     if(!snap.exists()) await setDoc(mRef,{...mBlank(),createdAt:serverTimestamp()},{merge:true});
     mReady=true;
-    await stLoad();
     mUnsub=onSnapshot(mRef,s=>{
       if(s.exists()){mSetData(s.data());mReady=true;mStatus('NEXUS sincronizado');}
     },err=>{console.error(err);mStatus('Erro nos módulos',true);});
@@ -5050,43 +5049,82 @@ function mRenderFinance(){const t=mMonthTotals();m$('finBalance').textContent=mM
 window.mRenderFinance=mRenderFinance;
 
 const st$=id=>document.getElementById(id);
-let stItems=[];
 function stMessage(message,bad=false){st$('statementStatus').textContent=message;st$('statementStatus').style.color=bad?'var(--red)':'var(--muted)'}
-function stRender(){
- const month=st$('statementFilterMonth').value,bank=st$('statementFilterBank').value.trim().toLowerCase();
- const items=stItems.filter(x=>(!month||x.month===month)&&(!bank||(x.bank||'').toLowerCase().includes(bank))).sort((a,b)=>(b.month||'').localeCompare(a.month||'')||(b.created||0)-(a.created||0));
- st$('statementList').innerHTML=items.length?items.map(x=>'<div class="entry"><div class="entry-main"><div class="entry-title">'+mEsc(x.bank||'Banco não informado')+' · '+mEsc((x.month||'').split('-').reverse().join('/'))+'</div><div class="entry-sub">'+mEsc(x.name||'Extrato')+' · '+(x.size?(x.size/1024/1024).toFixed(2)+' MB':'Arquivo na nuvem')+'</div></div><div class="entry-right"><div class="actions"><button class="mini" type="button" onclick="stOpen(\''+mEsc(x.path)+'\')">Abrir</button><button class="mini" type="button" onclick="stDelete(\''+mEsc(x.path)+'\')">Excluir</button></div></div></div>').join(''):'<div class="empty">Nenhum extrato encontrado para esse filtro.</div>';
+function stDate(value){
+ const s=String(value||'').trim();let m=s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/);
+ if(m){let y=Number(m[3]);if(y<100)y+=2000;return y+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0')}
+ m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[1]+'-'+m[2]+'-'+m[3];
+ m=s.match(/^(\d{1,2})[\/.\-](\d{1,2})$/);if(m)return new Date().getFullYear()+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+ return '';
 }
-async function stLoad(){
- const user=auth.currentUser;
- if(!user){stItems=[];stRender();stMessage('Entre na sua conta para acessar seus extratos.',true);return}
- try{
-  const result=await listAll(storageRef(storage,'users/'+user.uid+'/statements'));
-  stItems=await Promise.all(result.items.map(async item=>{
-   const pair=await Promise.all([getMetadata(item),getDownloadURL(item)]),meta=pair[0];
-   return {path:item.fullPath,url:pair[1],bank:meta.customMetadata?.bank||'',month:meta.customMetadata?.month||'',name:meta.customMetadata?.originalName||meta.name,size:meta.size,created:Date.parse(meta.timeCreated)||0};
-  }));
-  stRender();stMessage(stItems.length?stItems.length+' extrato(s) disponíveis na nuvem.':'Nenhum extrato enviado ainda.');
- }catch(err){console.error('Extratos:',err);stMessage(err.code==='storage/unauthorized'?'Acesso bloqueado pelas regras do Firebase Storage.':'Não foi possível acessar o Storage. Verifique se está ativado e com as regras publicadas.',true);st$('statementList').innerHTML='<div class="empty">Não foi possível carregar os extratos. Seus outros dados financeiros foram preservados.</div>'}
+function stMoney(raw){
+ let s=String(raw||'').replace(/R\$|\s/g,'').replace(/[()]/g,'').replace(/\.(?=\d{3}(?:,|$))/g,'').replace(',','.').replace(/[^\d.-]/g,'');
+ const n=Number(s);return Number.isFinite(n)?n:NaN;
 }
-window.stLoad=stLoad;window.stRender=stRender;
-window.stOpen=async path=>{try{const url=await getDownloadURL(storageRef(storage,path));window.open(url,'_blank','noopener,noreferrer')}catch(err){console.error(err);mToast('Não foi possível abrir este extrato.')}};
-window.stDelete=async path=>{if(!confirm('Excluir este extrato da nuvem? Esta ação não pode ser desfeita.'))return;try{await deleteObject(storageRef(storage,path));await stLoad();mToast('Extrato excluído.')}catch(err){console.error(err);mToast('Não foi possível excluir o extrato.')}};
+function stClassify(description,rawAmount){
+ const d=String(description||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const a=String(rawAmount||'').toUpperCase();
+ if(/\b(d|deb|debit|debito)\b/.test(a)||/compra|pagamento|boleto|saque|tarifa|pix enviado|transferencia enviada|debito|parcela/.test(d))return 'expense';
+ if(/\b(c|cred|credito)\b/.test(a)||/salario|deposito|recebido|pix recebido|transferencia recebida|estorno|rendimento|credito|ted recebida|doc recebida/.test(d))return 'income';
+ if(Number(rawAmount)<0)return 'expense';
+ if(Number(rawAmount)>0&&/[+-]/.test(String(rawAmount)))return 'income';
+ return '';
+}
+function stParseRows(lines){
+ const out=[];
+ for(const line0 of lines){
+  const line=String(line0||'').replace(/\s+/g,' ').trim();if(!line||/saldo anterior|saldo do dia|saldo final|total de lancamentos/i.test(line))continue;
+  const dm=line.match(/\b(\d{1,2}[\/.-]\d{1,2}(?:[\/.-]\d{2,4})?|\d{4}-\d{2}-\d{2})\b/);if(!dm)continue;
+  const date=stDate(dm[1]);if(!date)continue;
+  const amounts=[...line.matchAll(/[-+]?\s*(?:R\$\s*)?\d{1,3}(?:\.\d{3})*,\d{2}|[-+]?\s*\d+\.\d{2}/g)];
+  if(!amounts.length)continue;
+  // Em extratos com saldo após cada lançamento, o valor movimentado costuma ser o penúltimo número.
+  const chosen=amounts.length>1?amounts[amounts.length-2]:amounts[0];
+  const raw=chosen[0].replace(/R\$|\s/g,'');let amount=stMoney(raw);if(!Number.isFinite(amount)||amount===0)continue;
+  const desc=line.replace(dm[0],' ').replace(chosen[0],' ').replace(/\s+/g,' ').trim();
+  const kind=stClassify(desc,raw);if(!kind)continue;
+  out.push({date,title:desc.slice(0,100)||'Movimentação bancária',amount:Math.abs(amount),kind,category:kind==='income'?'Outros':'Outros'});
+ }
+ return out;
+}
+async function stExtract(file){
+ const name=file.name.toLowerCase();
+ if(name.endsWith('.ofx')||name.endsWith('.qfx')){
+  const t=await file.text(),rows=[];const blocks=t.match(/<STMTTRN>[\s\S]*?(?=<STMTTRN>|<\/BANKTRANLIST>|$)/gi)||[];
+  for(const b of blocks){const date=(b.match(/<DTPOSTED>(\d{4})(\d{2})(\d{2})/i)||[]);const amt=(b.match(/<TRNAMT>([-\d.,]+)/i)||[])[1];const title=((b.match(/<(?:NAME|MEMO)>([^<\r\n]+)/i)||[])[1]||'Movimentação OFX').trim();if(date.length&&amt){const n=Number(amt.replace(',','.'));if(n)rows.push({date:date[1]+'-'+date[2]+'-'+date[3],title:title.slice(0,100),amount:Math.abs(n),kind:n<0?'expense':'income',category:'Outros'})}}
+  return rows;
+ }
+ if(name.endsWith('.csv')||file.type==='text/csv'){
+  const t=await file.text(),lines=t.replace(/^\uFEFF/,'').split(/\r?\n/),delimiter=(lines[0].match(/;/g)||[]).length>(lines[0].match(/,/g)||[]).length?';':',',rows=[];
+  for(const line of lines.slice(1)){const cols=line.split(delimiter).map(x=>x.replace(/^"|"$/g,'').trim());const di=cols.findIndex(x=>stDate(x));const ai=cols.findIndex(x=>Number.isFinite(stMoney(x))&&/[\d]/.test(x));if(di<0||ai<0)continue;const raw=cols[ai],desc=cols.filter((x,i)=>i!==di&&i!==ai).join(' '),kind=stClassify(desc,raw),amount=Math.abs(stMoney(raw));if(kind&&amount)rows.push({date:stDate(cols[di]),title:desc.slice(0,100)||'Movimentação bancária',amount,kind,category:'Outros'})}
+  return rows;
+ }
+ if(file.type==='application/pdf'||name.endsWith('.pdf')){
+  stMessage('Lendo o PDF e identificando as movimentações...');
+  const pdfjs=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');
+  pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
+  const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise,lines=[];
+  for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p),content=await page.getTextContent(),groups=new Map();for(const item of content.items){if(!item.str?.trim())continue;const y=Math.round(item.transform[5]/2)*2;if(!groups.has(y))groups.set(y,[]);groups.get(y).push({x:item.transform[4],s:item.str})}for(const y of [...groups.keys()].sort((a,b)=>b-a)){lines.push(groups.get(y).sort((a,b)=>a.x-b.x).map(x=>x.s).join(' '))}}
+  if(!lines.join(' ').trim())throw new Error('PDF sem texto selecionável. Este arquivo parece ser digitalizado como imagem; não foi possível ler sem OCR.');
+  return stParseRows(lines);
+ }
+ throw new Error('Formato não suportado. Envie PDF, OFX, QFX ou CSV.');
+}
 st$('statementForm').addEventListener('submit',async e=>{
- e.preventDefault();const user=auth.currentUser,bank=st$('statementBank').value.trim(),month=st$('statementMonth').value,file=st$('statementFile').files[0],button=st$('statementUpload');
- if(!user){stMessage('Entre na sua conta antes de enviar.',true);return}if(!file||!bank||!month)return;
- if(!['application/pdf','image/jpeg','image/png','image/webp'].includes(file.type)){stMessage('Formato não permitido. Use PDF, JPG, PNG ou WEBP.',true);return}
- if(file.size>15*1024*1024){stMessage('O arquivo ultrapassa o limite de 15 MB.',true);return}
- button.disabled=true;button.textContent='Enviando...';stMessage('Enviando arquivo com segurança para a nuvem...');
+ e.preventDefault();const user=auth.currentUser,bank=st$('statementBank').value.trim(),file=st$('statementFile').files[0],button=st$('statementUpload');
+ if(!user||!mReady){stMessage('Entre na sua conta e aguarde a sincronização antes de importar.',true);return}
+ if(!file||!bank)return;if(file.size>20*1024*1024){stMessage('O arquivo ultrapassa 20 MB.',true);return}
+ button.disabled=true;button.textContent='Analisando...';
  try{
-  const safeName=file.name.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_').slice(-90)||'extrato';
-  const path='users/'+user.uid+'/statements/'+Date.now()+'_'+safeName;
-  await uploadBytes(storageRef(storage,path),file,{contentType:file.type,customMetadata:{bank:bank,month:month,originalName:file.name,uploadedBy:user.uid}});
-  st$('statementForm').reset();await stLoad();mToast('Extrato enviado e sincronizado com sua conta.');
- }catch(err){console.error('Upload extrato:',err);stMessage(err.code==='storage/unauthorized'?'O Firebase Storage recusou o envio. Confira as regras privadas.':'Falha no envio. Confirme se o Storage está ativado e tente novamente.',true)}
- finally{button.disabled=false;button.textContent='＋ Enviar extrato para a nuvem'}
+  const rows=await stExtract(file);if(!rows.length)throw new Error('Não encontrei movimentações reconhecíveis. Confira se o extrato contém texto e tente exportar em OFX ou CSV pelo banco.');
+  const existing=new Set(mData.transactions.map(x=>x.sourceKey).filter(Boolean));let added=0,duplicates=0;
+  for(const row of rows){const sourceKey=[bank.toLowerCase(),row.date,row.kind,row.amount.toFixed(2),row.title.toLowerCase()].join('|');if(existing.has(sourceKey)){duplicates++;continue}existing.add(sourceKey);mData.transactions.push({id:uid(),title:row.title,amount:row.amount,kind:row.kind,category:row.category,date:row.date,note:'Importado do extrato · '+bank,bank,sourceKey}) ;added++}
+  if(added){await mSave();mRenderFinance()}
+  stMessage(added+' movimentação(ões) importada(s) de '+rows.length+' identificada(s). '+duplicates+' duplicada(s) ignorada(s). Confira os lançamentos no Financeiro.');
+  st$('statementFile').value='';mToast(added+' movimentação(ões) adicionadas ao Financeiro.');
+ }catch(err){console.error('Leitura de extrato:',err);stMessage(err.message||'Não foi possível ler o extrato.',true)}
+ finally{button.disabled=false;button.textContent='＋ Ler e importar movimentações'}
 });
-st$('statementMonth').value=new Date().toISOString().slice(0,7);
 
 function mRenderAgenda(){const filter=m$('agendaFilter').value,date=m$('agendaDate').value;let list=[...mData.events];if(filter==='upcoming')list=list.filter(x=>!x.done&&x.date>=mToday);if(filter==='done')list=list.filter(x=>x.done);if(date)list=list.filter(x=>x.date===date);list.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));m$('agendaList').innerHTML=list.length?list.map(x=>`<div class="entry"><div class="entry-main"><div class="entry-title">${mEsc(x.title)} ${x.done?'<span class="positive">✓</span>':''}</div><div class="entry-sub">${mFmtDate(x.date)} · ${mEsc(x.time||'Horário não definido')} · ${mEsc(x.category||'')} ${x.place?'· '+mEsc(x.place):''}${x.note?' · '+mEsc(x.note):''}</div></div><div class="actions"><button class="mini" onclick="toggleModuleEvent('${x.id}')">${x.done?'Reabrir':'Concluir'}</button><button class="mini" onclick="editModuleRecord('event','${x.id}')">Editar</button><button class="mini" onclick="deleteModuleRecord('event','${x.id}')">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum compromisso encontrado.</div>'}
 window.mRenderAgenda=mRenderAgenda;window.toggleModuleEvent=async id=>{const x=mData.events.find(x=>x.id===id);if(x)x.done=!x.done;await mSave();mRenderAll()};
